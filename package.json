@@ -2,15 +2,17 @@
   "name": "dubex",
   "version": "0.0.1",
   "description": "A JavaScript and TypeScript CLI toolkit for generating boilerplate, accessors, and backend resources.",
-  "main": "index.js",
+  "type": "module",
   "bin": {
-    "dbx": "/dist/cli.js"
+    "dbx": "./dist/bin/cli.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && chmod +x dist/bin/cli.js",
     "check": "tsc --noEmit",
-    "dev": "node --watch src/cli.ts",
-    "start": "node dist/cli.js"
+    "dev": "node --watch bin/cli.ts",
+    "dev:accessors": "node --watch bin/cli.ts gen accessors",
+    "start": "node dist/bin/cli.js",
+    "link:global": "pnpm build && pnpm add -g ."
   },
   "keywords": [
     "cli",
@@ -38,7 +40,6 @@
       "onFail": "download"
     }
   },
-  "type": "module",
   "devDependencies": {
     "@types/node": "^25.9.1",
     "eslint": "^10.4.0",
