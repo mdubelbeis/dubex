@@ -9,8 +9,8 @@
   "scripts": {
     "build": "tsc && chmod +x dist/bin/cli.js",
     "check": "tsc --noEmit",
-    "dev": "node --watch bin/cli.ts",
-    "dev:accessors": "node --watch bin/cli.ts gen accessors",
+    "dev": "node bin/cli.ts",
+    "dev:accessors": "node bin/cli.ts gen accessors",
     "start": "node dist/bin/cli.js",
     "link:global": "pnpm build && pnpm add -g ."
   },
