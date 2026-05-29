@@ -21,7 +21,7 @@ const gen = program.command('gen').description('Generate project code');
 
 gen
   .command('accessors <source>')
-  .description('Generate getters and setters from a TypeScript class file')
+  .description('Generate getters and setters from class fields in a JS/TS file.')
   .action((source: string) => {
     try {
       const classFile: string = fs.readFileSync(source, 'utf-8');
