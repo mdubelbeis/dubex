@@ -3,10 +3,84 @@
 import { Command } from 'commander';
 import fs from 'node:fs';
 
-interface FieldAndType {
+interface TsFieldAndType {
   field: string;
   type: string;
 }
+
+interface JsField {
+  field: string;
+}
+
+const handleJSClassFile = (splitFile: string[], insertLine: number) => {
+  const fieldLine = splitFile.filter((line) => line.includes('_') && !line.includes('this._'));
+
+  const jsAccessors: JsField[] = [];
+
+  for (const field of fieldLine) {
+    const startIndex = field.indexOf('_');
+    const endOfLine = field.indexOf(';');
+
+    const fieldName = field.slice(startIndex + 1, endOfLine);
+
+    jsAccessors.push({ field: fieldName });
+  }
+
+  for (const accessor of jsAccessors) {
+    const { field } = accessor;
+
+    const capitalizedField = field.substring(0, 1).toUpperCase() + field.substring(1);
+
+    splitFile.splice(
+      insertLine,
+      0,
+      `\n\tget${capitalizedField}() {\n\t\treturn this._${field};\n\t}`
+    );
+    splitFile.splice(
+      insertLine + 1,
+      0,
+      `\n\tset${capitalizedField}(${field}) {\n\t\tthis._${field} = ${field};\n\t}`
+    );
+  }
+};
+
+const handleTSClassFile = (splitFile: string[], insertLine: number) => {
+  const tsAccessors: TsFieldAndType[] = [];
+
+  const fieldLine = splitFile.filter(
+    (line) =>
+      line.includes('private') ||
+      line.includes('public') ||
+      line.includes('protected') ||
+      line.includes('static')
+  );
+
+  for (const field of fieldLine) {
+    const startIndex = field.indexOf('_');
+    const endIndex = field.indexOf(':');
+    const endOfLine = field.indexOf(';');
+
+    const fieldName = field.slice(startIndex + 1, endIndex);
+    const type = field.slice(endIndex + 2, endOfLine);
+
+    tsAccessors.push({ field: fieldName, type: type });
+  }
+
+  // TODO: Refactor into function (.ts file)
+  for (const accessor of tsAccessors) {
+    const { field, type } = accessor;
+    splitFile.splice(
+      insertLine,
+      0,
+      `\n\tget ${field}(): ${type} {\n\t\treturn this._${field};\n\t}`
+    );
+    splitFile.splice(
+      insertLine + 1,
+      0,
+      `\n\tset ${field}(${field}: ${type}) {\n\t\tthis._${field} = ${field};\n\t}`
+    );
+  }
+};
 
 const program = new Command();
 
@@ -25,39 +99,16 @@ gen
   .action((source: string) => {
     try {
       const classFile: string = fs.readFileSync(source, 'utf-8');
-      const accessors: FieldAndType[] = [];
 
       const splitFile = classFile.split('\n');
-
-      const fieldLine = splitFile.filter(
-        (line) => line.includes('private') || line.includes('public')
-      );
-
-      for (const field of fieldLine) {
-        const startIndex = field.indexOf('_');
-        const endIndex = field.indexOf(':');
-        const endOfLine = field.indexOf(';');
-
-        const fieldName = field.slice(startIndex + 1, endIndex);
-        const type = field.slice(endIndex + 2, endOfLine);
-
-        accessors.push({ field: fieldName, type: type });
-      }
-
       const insertLine = splitFile.lastIndexOf('}');
 
-      for (const accessor of accessors) {
-        const { field, type } = accessor;
-        splitFile.splice(
-          insertLine,
-          0,
-          `\tget ${field}(): ${type} {\n\t\treturn this._${field};\n\t}`
-        );
-        splitFile.splice(
-          insertLine + 1,
-          0,
-          `\tset ${field}(${field}: ${type}) {\n\t\tthis._${field} = ${field};\n\t}`
-        );
+      if (source.includes('.ts')) {
+        handleTSClassFile(splitFile, insertLine);
+      }
+
+      if (source.includes('.js')) {
+        handleJSClassFile(splitFile, insertLine);
       }
 
       const writeString = splitFile.join('\n');
