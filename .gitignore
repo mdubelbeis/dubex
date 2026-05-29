@@ -45,3 +45,6 @@ temp/
 # Package manager
 package-lock.json
 yarn.lock
+
+# MISC
+directories.md
