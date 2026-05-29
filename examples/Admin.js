@@ -9,27 +9,27 @@ class Admin {
     this._email = email;
   }
 
-	getEmail() {
-		return this._email;
-	}
+  getEmail() {
+    return this._email;
+  }
 
-	setEmail(email) {
-		this._email = email;
-	}
+  setEmail(email) {
+    this._email = email;
+  }
 
-	getLastName() {
-		return this._lastName;
-	}
+  getLastName() {
+    return this._lastName;
+  }
 
-	setLastName(lastName) {
-		this._lastName = lastName;
-	}
+  setLastName(lastName) {
+    this._lastName = lastName;
+  }
 
-	getFirstName() {
-		return this._firstName;
-	}
+  getFirstName() {
+    return this._firstName;
+  }
 
-	setFirstName(firstName) {
-		this._firstName = firstName;
-	}
+  setFirstName(firstName) {
+    this._firstName = firstName;
+  }
 }
