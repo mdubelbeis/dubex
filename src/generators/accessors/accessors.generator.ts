@@ -1,15 +1,15 @@
 import fs from 'node:fs';
 import { formatJsAccessors, formatTsAccessors } from './accessors.formatter.js';
-import { parseJSFields, parseTSAccessors } from './accessors.parser.js';
+import { parseJsClassFields, parseTsClassFields } from './accessors.parser.js';
 
 const handleClassFile = (splitFile: string[], fileExtension: '.ts' | '.js') => {
   if (fileExtension === '.js') {
-    const accessors = parseJSFields(splitFile);
+    const accessors = parseJsClassFields(splitFile);
     formatJsAccessors(accessors, splitFile);
   }
 
   if (fileExtension === '.ts') {
-    const accessors = parseTSAccessors(splitFile);
+    const accessors = parseTsClassFields(splitFile);
     formatTsAccessors(accessors, splitFile);
   }
 };

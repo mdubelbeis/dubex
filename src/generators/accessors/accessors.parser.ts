@@ -1,6 +1,6 @@
 import type { FieldAndType, JsField } from './accessors.types.js';
 
-export const parseJSFields = (splitFile: string[]) => {
+export const parseJsClassFields = (splitFile: string[]) => {
   const jsAccessors: JsField[] = [];
 
   const fieldLine = splitFile.filter((line) => line.includes('_') && !line.includes('this._'));
@@ -17,7 +17,7 @@ export const parseJSFields = (splitFile: string[]) => {
   return jsAccessors;
 };
 
-export const parseTSAccessors = (splitFile: string[]) => {
+export const parseTsClassFields = (splitFile: string[]) => {
   const tsAccessors: FieldAndType[] = [];
 
   const fieldLine = splitFile.filter(
