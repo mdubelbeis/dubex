@@ -7,9 +7,9 @@ export const parseJsClassFields = (splitFile: string[]) => {
 
   for (const field of fieldLine) {
     const startIndex = field.indexOf('_');
-    const endOfLine = field.indexOf(';');
+    const endIndex = field.indexOf(';');
 
-    const fieldName = field.slice(startIndex + 1, endOfLine);
+    const fieldName = field.slice(startIndex + 1, endIndex);
 
     jsAccessors.push({ field: fieldName });
   }
