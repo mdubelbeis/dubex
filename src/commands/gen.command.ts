@@ -8,7 +8,5 @@ export function createGenCommand() {
 
   gen.addCommand(createAccessorsCommand());
 
-  // Future gen commands
-
   return gen;
 }
