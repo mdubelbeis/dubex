@@ -3,14 +3,14 @@ import { formatJsAccessors, formatTsAccessors } from './accessors.formatter.js';
 import { parseJsClassFields, parseTsClassFields } from './accessors.parser.js';
 
 const handleClassFile = (splitFile: string[], fileExtension: '.ts' | '.js') => {
-  if (fileExtension === '.js') {
-    const accessors = parseJsClassFields(splitFile);
-    formatJsAccessors(accessors, splitFile);
-  }
-
   if (fileExtension === '.ts') {
     const accessors = parseTsClassFields(splitFile);
     formatTsAccessors(accessors, splitFile);
+  }
+
+  if (fileExtension === '.js') {
+    const accessors = parseJsClassFields(splitFile);
+    formatJsAccessors(accessors, splitFile);
   }
 };
 

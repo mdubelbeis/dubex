@@ -1,22 +1,5 @@
 import type { FieldAndType, JsField } from './accessors.types.js';
 
-export const parseJsClassFields = (splitFile: string[]) => {
-  const jsAccessors: JsField[] = [];
-
-  const fieldLine = splitFile.filter((line) => line.includes('_') && !line.includes('this._'));
-
-  for (const field of fieldLine) {
-    const startIndex = field.indexOf('_');
-    const endIndex = field.indexOf(';');
-
-    const fieldName = field.slice(startIndex + 1, endIndex);
-
-    jsAccessors.push({ field: fieldName });
-  }
-
-  return jsAccessors;
-};
-
 export const parseTsClassFields = (splitFile: string[]) => {
   const tsAccessors: FieldAndType[] = [];
 
@@ -40,4 +23,21 @@ export const parseTsClassFields = (splitFile: string[]) => {
   }
 
   return tsAccessors;
+};
+
+export const parseJsClassFields = (splitFile: string[]) => {
+  const jsAccessors: JsField[] = [];
+
+  const fieldLine = splitFile.filter((line) => line.includes('_') && !line.includes('this._'));
+
+  for (const field of fieldLine) {
+    const startIndex = field.indexOf('_');
+    const endIndex = field.indexOf(';');
+
+    const fieldName = field.slice(startIndex + 1, endIndex);
+
+    jsAccessors.push({ field: fieldName });
+  }
+
+  return jsAccessors;
 };

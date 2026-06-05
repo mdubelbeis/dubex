@@ -1,5 +1,22 @@
 import type { FieldAndType, JsField } from './accessors.types.js';
 
+export const formatTsAccessors = (tsAccessors: FieldAndType[], splitFile: string[]) => {
+  const insertLine = splitFile.lastIndexOf('}');
+  for (const accessor of tsAccessors) {
+    const { field, type } = accessor;
+    splitFile.splice(
+      insertLine,
+      0,
+      `\n\tget ${field}(): ${type} {\n\t\treturn this._${field};\n\t}`
+    );
+    splitFile.splice(
+      insertLine + 1,
+      0,
+      `\n\tset ${field}(${field}: ${type}) {\n\t\tthis._${field} = ${field};\n\t}`
+    );
+  }
+};
+
 export const formatJsAccessors = (jsAccessors: JsField[], splitFile: string[]) => {
   const insertLine = splitFile.lastIndexOf('}');
 
@@ -17,23 +34,6 @@ export const formatJsAccessors = (jsAccessors: JsField[], splitFile: string[]) =
       insertLine + 1,
       0,
       `\n\tset${capitalizedField}(${field}) {\n\t\tthis._${field} = ${field};\n\t}`
-    );
-  }
-};
-
-export const formatTsAccessors = (tsAccessors: FieldAndType[], splitFile: string[]) => {
-  const insertLine = splitFile.lastIndexOf('}');
-  for (const accessor of tsAccessors) {
-    const { field, type } = accessor;
-    splitFile.splice(
-      insertLine,
-      0,
-      `\n\tget ${field}(): ${type} {\n\t\treturn this._${field};\n\t}`
-    );
-    splitFile.splice(
-      insertLine + 1,
-      0,
-      `\n\tset ${field}(${field}: ${type}) {\n\t\tthis._${field} = ${field};\n\t}`
     );
   }
 };
