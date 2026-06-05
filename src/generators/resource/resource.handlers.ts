@@ -8,7 +8,7 @@ import ${entityLowerCase}Router from "./routes/${entityLowerCase}Routes.js";
 const app = express();
 app.use(express.json());
 
-app.use("/api/v1/${entityLowerCase}", ${entityLowerCase}Router);
+app.use("/api/v1/${entityLowerCase}s", ${entityLowerCase}Router);
 
 export default app;
 `;
