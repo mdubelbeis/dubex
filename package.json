@@ -11,6 +11,7 @@
     "check": "tsc --noEmit",
     "dev": "tsx bin/cli.ts",
     "dev:accessors": "tsx bin/cli.ts gen accessors",
+    "dev:resource": "tsx bin/cli.ts gen resource",
     "start": "node dist/bin/cli.js",
     "link:global": "pnpm build && pnpm add -g ."
   },
