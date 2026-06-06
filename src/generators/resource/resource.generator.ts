@@ -5,12 +5,13 @@ import {
   handleControllerFile,
   handleEnvFile,
   handleModelFile,
+  handleRoutesFile,
   handleServerFile,
 } from './resource.handlers.js';
 import type { GenerationResult } from './resource.types.js';
 
-export const generateBoilerPlate = (entity: string) => {
-  const src = './examples/exampleSrc';
+export const generateResource = (entity: string) => {
+  const src = './examples/src';
   const lowerCaseEntity = entity.toLowerCase();
 
   const trackingResults: GenerationResult = {
@@ -33,9 +34,9 @@ export const generateBoilerPlate = (entity: string) => {
   };
 
   const files = {
-    controllers: `${directories.controllers}/${lowerCaseEntity}Controller.js`,
-    routes: `${directories.routes}/${lowerCaseEntity}Routes.js`,
-    models: `${directories.models}/${entity}.js`,
+    controllers: `${directories.controllers}/${lowerCaseEntity}.controller.js`,
+    routes: `${directories.routes}/${lowerCaseEntity}.routes.js`,
+    models: `${directories.models}/${lowerCaseEntity}.model.js`,
   };
 
   //* 1. Create directories
@@ -44,33 +45,14 @@ export const generateBoilerPlate = (entity: string) => {
     createDirIfMissing(directories.controllers, trackingResults);
     createDirIfMissing(directories.routes, trackingResults);
     createDirIfMissing(directories.models, trackingResults);
-    // fs.mkdirSync(src, { recursive: true });
-    // fs.mkdirSync(directories.controllers, { recursive: true });
-    // fs.mkdirSync(directories.routes, { recursive: true });
-    // fs.mkdirSync(directories.models, { recursive: true });
 
-    //* 2. Write Boiler-plate to files
     createFileIfMissing(initFiles.app, handleAppFile(entity), trackingResults);
-    // if (!fs.existsSync(initFiles.app)) {
-    //   fs.writeFileSync(initFiles.app, handleAppFile(entity) , 'utf-8');
-    // }
-
     createFileIfMissing(initFiles.server, handleServerFile(), trackingResults);
-    // if (!fs.existsSync(initFiles.server)) {
-    //   fs.writeFileSync(initFiles.server, handleServerFile(), 'utf-8');
-    // }
-
     createFileIfMissing(initFiles.dotenv, handleEnvFile(), trackingResults);
-    // if (!fs.existsSync(initFiles.dotenv)) {
-    //   fs.writeFileSync(initFiles.dotenv, handleEnvFile(), 'utf-8');
-    // }
 
     createFileIfMissing(files.controllers, handleControllerFile(entity), trackingResults);
-    createFileIfMissing(files.routes, handleControllerFile(entity), trackingResults);
+    createFileIfMissing(files.routes, handleRoutesFile(entity), trackingResults);
     createFileIfMissing(files.models, handleModelFile(entity), trackingResults);
-    // fs.writeFileSync(files.controllers, handleControllerFile(entity), 'utf-8');
-    // fs.writeFileSync(files.routes, handleRoutesFile(entity), 'utf-8');
-    // fs.writeFileSync(files.models, handleModelFile(entity), 'utf-8');
 
     outputGenerationSummary(entity, trackingResults);
   } catch (err) {
