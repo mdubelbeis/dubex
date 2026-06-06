@@ -3,7 +3,7 @@ export const handleAppFile = (entity: string): string => {
   const entityLowerCase = entity.toLowerCase();
 
   return `import express from "express";
-import ${entityLowerCase}Router from "./routes/${entityLowerCase}Routes.js";
+import ${entityLowerCase}Router from "./routes/${entityLowerCase}.routes.js";
 
 const app = express();
 app.use(express.json());
@@ -50,7 +50,7 @@ DB_CLOUD=
 
 export const handleControllerFile = (entity: string): string => {
   const entityLowerCase = entity.toLowerCase();
-  return `import ${entity} from "../models/${entity}.js";
+  return `import ${entity} from "../models/${entityLowerCase}.model.js";
 
 export const getAll${entity}s = async (req, res, next) => {
   const ${entityLowerCase}s = await ${entity}.find();
@@ -109,7 +109,7 @@ export const delete${entity} = async (req, res, next) => {
 
 export const handleRoutesFile = (entity: string): string => {
   return `import express from 'express';
-import { getAll${entity}s, get${entity}ById, create${entity}, update${entity}, delete${entity}}  from "../controllers/${entity.toLowerCase()}Controller.js";
+import { getAll${entity}s, get${entity}ById, create${entity}, update${entity}, delete${entity}}  from "../controllers/${entity.toLowerCase()}.controller.js";
 
 const router = express.Router();
 
