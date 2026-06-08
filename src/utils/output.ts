@@ -6,7 +6,6 @@ export const outputGenerationSummary = (entity: string, results: GenerationResul
 
   if (results.dryRunDirs.length > 0) {
     console.log('Would create directories:');
-
     for (const dir of results.dryRunDirs) {
       console.log(chalk.magenta(`  - ${dir}`));
     }

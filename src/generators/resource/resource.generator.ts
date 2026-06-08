@@ -14,6 +14,8 @@ export const generateResource = (entity: string, options: GenerateResourceOption
   const src = './examples/src';
   const lowerCaseEntity = entity.toLowerCase();
 
+  const { dryRun, typescript, force } = options;
+
   const trackingResults: GenerationResult = {
     createdFiles: [],
     createdDirs: [],
@@ -32,36 +34,47 @@ export const generateResource = (entity: string, options: GenerateResourceOption
   };
 
   const initFiles = {
-    app: `${src}/app.js`,
-    server: `${src}/server.js`,
+    app: typescript ? `${src}/app.ts` : `${src}/app.js`,
+    server: typescript ? `${src}/server.ts` : `${src}/server.js`,
     dotenv: `${src}/.env`,
   };
 
   const files = {
-    controllers: `${directories.controllers}/${lowerCaseEntity}.controller.js`,
-    routes: `${directories.routes}/${lowerCaseEntity}.routes.js`,
-    models: `${directories.models}/${lowerCaseEntity}.model.js`,
+    controllers: typescript
+      ? `${directories.controllers}/${lowerCaseEntity}.controller.ts`
+      : `${directories.controllers}/${lowerCaseEntity}.controller.js`,
+    routes: typescript
+      ? `${directories.routes}/${lowerCaseEntity}.routes.ts`
+      : `${directories.routes}/${lowerCaseEntity}.routes.js`,
+    models: typescript
+      ? `${directories.models}/${lowerCaseEntity}.model.ts`
+      : `${directories.models}/${lowerCaseEntity}.model.js`,
   };
 
   //* 1. Create directories
   try {
-    createDirIfMissing(src, trackingResults, options);
-    createDirIfMissing(directories.controllers, trackingResults, options);
-    createDirIfMissing(directories.routes, trackingResults, options);
-    createDirIfMissing(directories.models, trackingResults, options);
+    createDirIfMissing(src, trackingResults, dryRun);
+    createDirIfMissing(directories.controllers, trackingResults, dryRun);
+    createDirIfMissing(directories.routes, trackingResults, dryRun);
+    createDirIfMissing(directories.models, trackingResults, dryRun);
 
-    createFileIfMissing(initFiles.app, handleAppFile(entity, options), trackingResults, options);
-    createFileIfMissing(initFiles.server, handleServerFile(options), trackingResults, options);
-    createFileIfMissing(initFiles.dotenv, handleEnvFile(), trackingResults, options);
+    createFileIfMissing(initFiles.app, handleAppFile(entity), trackingResults, dryRun);
+    createFileIfMissing(initFiles.server, handleServerFile(), trackingResults, dryRun);
+    createFileIfMissing(initFiles.dotenv, handleEnvFile(), trackingResults, dryRun);
 
     createFileIfMissing(
       files.controllers,
-      handleControllerFile(entity, options),
+      handleControllerFile(entity, typescript),
       trackingResults,
-      options
+      dryRun
     );
-    createFileIfMissing(files.routes, handleRoutesFile(entity, options), trackingResults, options);
-    createFileIfMissing(files.models, handleModelFile(entity), trackingResults, options);
+    createFileIfMissing(
+      files.routes,
+      handleRoutesFile(entity, typescript),
+      trackingResults,
+      dryRun
+    );
+    createFileIfMissing(files.models, handleModelFile(entity), trackingResults, dryRun);
 
     outputGenerationSummary(entity, trackingResults);
   } catch (err) {

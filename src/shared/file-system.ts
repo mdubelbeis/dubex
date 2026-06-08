@@ -1,14 +1,11 @@
 import fs from 'node:fs';
-import type {
-  GenerateResourceOptions,
-  GenerationResult,
-} from '../generators/resource/resource.types.js';
+import type { GenerationResult } from '../generators/resource/resource.types.js';
 export const createDirIfMissing = (
   path: string,
   results: GenerationResult,
-  options: GenerateResourceOptions
+  dryRun?: boolean
 ): void => {
-  if (options.dryRun) {
+  if (dryRun) {
     if (!fs.existsSync(path)) {
       results.dryRunDirs.push(path);
     } else {
@@ -20,18 +17,18 @@ export const createDirIfMissing = (
   if (!fs.existsSync(path)) {
     fs.mkdirSync(path);
     results.createdDirs.push(path);
-    return;
+  } else {
+    results.skippedDirs.push(path);
   }
-  results.skippedDirs.push(path);
 };
 
 export const createFileIfMissing = (
   path: string,
   content: string,
   results: GenerationResult,
-  options: GenerateResourceOptions
+  dryRun?: boolean
 ): void => {
-  if (options.dryRun) {
+  if (dryRun) {
     if (!fs.existsSync(path)) {
       results.dryRunFiles.push(path);
     } else {
@@ -43,7 +40,7 @@ export const createFileIfMissing = (
   if (!fs.existsSync(path)) {
     fs.writeFileSync(path, content, 'utf-8');
     results.createdFiles.push(path);
-    return;
+  } else {
+    results.skippedFiles.push(path);
   }
-  results.skippedFiles.push(path);
 };
