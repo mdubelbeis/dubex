@@ -7,6 +7,8 @@ export interface GenerationResult {
   dryRunFiles: string[];
   dryRunSkippedDirs: string[];
   dryRunSkippedFiles: string[];
+  overwrittenFiles: string[];
+  dryRunOverwrittenFiles: string[];
 }
 
 export type GenerateResourceOptions = {

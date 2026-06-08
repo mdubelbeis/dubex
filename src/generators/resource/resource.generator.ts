@@ -14,7 +14,9 @@ export const generateResource = (entity: string, options: GenerateResourceOption
   const src = './examples/src';
   const lowerCaseEntity = entity.toLowerCase();
 
-  const { dryRun, typescript, force } = options;
+  const dryRun = options.dryRun === true;
+  const typescript = options.typescript === true;
+  const force = options.force === true;
 
   const trackingResults: GenerationResult = {
     createdFiles: [],
@@ -25,6 +27,8 @@ export const generateResource = (entity: string, options: GenerateResourceOption
     dryRunFiles: [],
     dryRunSkippedDirs: [],
     dryRunSkippedFiles: [],
+    overwrittenFiles: [],
+    dryRunOverwrittenFiles: [],
   };
 
   const directories = {
@@ -66,15 +70,17 @@ export const generateResource = (entity: string, options: GenerateResourceOption
       files.controllers,
       handleControllerFile(entity, typescript),
       trackingResults,
-      dryRun
+      dryRun,
+      force
     );
     createFileIfMissing(
       files.routes,
       handleRoutesFile(entity, typescript),
       trackingResults,
-      dryRun
+      dryRun,
+      force
     );
-    createFileIfMissing(files.models, handleModelFile(entity), trackingResults, dryRun);
+    createFileIfMissing(files.models, handleModelFile(entity), trackingResults, dryRun, force);
 
     outputGenerationSummary(entity, trackingResults);
   } catch (err) {
