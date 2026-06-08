@@ -8,9 +8,9 @@ import {
   handleRoutesFile,
   handleServerFile,
 } from './resource.handlers.js';
-import type { GenerationResult } from './resource.types.js';
+import type { GenerateResourceOptions, GenerationResult } from './resource.types.js';
 
-export const generateResource = (entity: string) => {
+export const generateResource = (entity: string, options: GenerateResourceOptions) => {
   const src = './examples/src';
   const lowerCaseEntity = entity.toLowerCase();
 
@@ -19,6 +19,10 @@ export const generateResource = (entity: string) => {
     createdDirs: [],
     skippedFiles: [],
     skippedDirs: [],
+    dryRunDirs: [],
+    dryRunFiles: [],
+    dryRunSkippedDirs: [],
+    dryRunSkippedFiles: [],
   };
 
   const directories = {
@@ -41,18 +45,23 @@ export const generateResource = (entity: string) => {
 
   //* 1. Create directories
   try {
-    createDirIfMissing(src, trackingResults);
-    createDirIfMissing(directories.controllers, trackingResults);
-    createDirIfMissing(directories.routes, trackingResults);
-    createDirIfMissing(directories.models, trackingResults);
+    createDirIfMissing(src, trackingResults, options);
+    createDirIfMissing(directories.controllers, trackingResults, options);
+    createDirIfMissing(directories.routes, trackingResults, options);
+    createDirIfMissing(directories.models, trackingResults, options);
 
-    createFileIfMissing(initFiles.app, handleAppFile(entity), trackingResults);
-    createFileIfMissing(initFiles.server, handleServerFile(), trackingResults);
-    createFileIfMissing(initFiles.dotenv, handleEnvFile(), trackingResults);
+    createFileIfMissing(initFiles.app, handleAppFile(entity, options), trackingResults, options);
+    createFileIfMissing(initFiles.server, handleServerFile(options), trackingResults, options);
+    createFileIfMissing(initFiles.dotenv, handleEnvFile(), trackingResults, options);
 
-    createFileIfMissing(files.controllers, handleControllerFile(entity), trackingResults);
-    createFileIfMissing(files.routes, handleRoutesFile(entity), trackingResults);
-    createFileIfMissing(files.models, handleModelFile(entity), trackingResults);
+    createFileIfMissing(
+      files.controllers,
+      handleControllerFile(entity, options),
+      trackingResults,
+      options
+    );
+    createFileIfMissing(files.routes, handleRoutesFile(entity, options), trackingResults, options);
+    createFileIfMissing(files.models, handleModelFile(entity), trackingResults, options);
 
     outputGenerationSummary(entity, trackingResults);
   } catch (err) {

@@ -1,4 +1,6 @@
-export const handleAppFile = (entity: string): string => {
+import type { GenerateResourceOptions } from './resource.types.js';
+
+export const handleAppFile = (entity: string, options: GenerateResourceOptions): string => {
   // TODO: Need all routers avail from '/routes' dir for imports on additional resource gen
   const entityLowerCase = entity.toLowerCase();
 
@@ -14,7 +16,7 @@ export default app;
 `;
 };
 
-export const handleServerFile = (): string => {
+export const handleServerFile = (options: GenerateResourceOptions): string => {
   return `import dotenv from "dotenv";
 import mongoose from "mongoose";
 
@@ -48,7 +50,7 @@ DB_CLOUD=
 `;
 };
 
-export const handleControllerFile = (entity: string): string => {
+export const handleControllerFile = (entity: string, options: GenerateResourceOptions): string => {
   const entityLowerCase = entity.toLowerCase();
   return `import ${entity} from "../models/${entityLowerCase}.model.js";
 
@@ -107,7 +109,7 @@ export const delete${entity} = async (req, res, next) => {
 `;
 };
 
-export const handleRoutesFile = (entity: string): string => {
+export const handleRoutesFile = (entity: string, options: GenerateResourceOptions): string => {
   return `import express from 'express';
 import { getAll${entity}s, get${entity}ById, create${entity}, update${entity}, delete${entity}}  from "../controllers/${entity.toLowerCase()}.controller.js";
 

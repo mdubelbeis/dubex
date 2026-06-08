@@ -3,4 +3,14 @@ export interface GenerationResult {
   createdDirs: string[];
   skippedFiles: string[];
   skippedDirs: string[];
+  dryRunDirs: string[];
+  dryRunFiles: string[];
+  dryRunSkippedDirs: string[];
+  dryRunSkippedFiles: string[];
 }
+
+export type GenerateResourceOptions = {
+  dryRun?: boolean;
+  force?: boolean;
+  ts?: boolean;
+};
