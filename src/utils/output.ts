@@ -11,24 +11,10 @@ export const outputGenerationSummary = (entity: string, results: GenerationResul
     }
   }
 
-  if (results.dryRunFiles.length > 0) {
-    console.log('Would create files:');
-    for (const file of results.dryRunFiles) {
-      console.log(chalk.magenta(`  - ${file}`));
-    }
-  }
-
   if (results.dryRunSkippedDirs.length > 0) {
-    console.log('Would skip dirs:');
+    console.log('Would skip directories:');
     for (const dir of results.dryRunSkippedDirs) {
       console.log(chalk.grey(`  - ${dir}`));
-    }
-  }
-
-  if (results.dryRunSkippedFiles.length > 0) {
-    console.log('Would skip files:');
-    for (const file of results.dryRunSkippedFiles) {
-      console.log(chalk.grey(`  - ${file}`));
     }
   }
 
@@ -39,17 +25,45 @@ export const outputGenerationSummary = (entity: string, results: GenerationResul
     }
   }
 
-  if (results.createdFiles.length > 0) {
-    console.log('Created files: ');
-    for (const file of results.createdFiles) {
-      console.log(chalk.green(`  - ${file}`));
-    }
-  }
-
   if (results.skippedDirs.length > 0) {
     console.log('Skipped directories: ');
     for (const dir of results.skippedDirs) {
       console.log(chalk.gray(`  - ${dir}`));
+    }
+  }
+
+  if (results.overwrittenFiles.length > 0) {
+    console.log('Overwritten files:');
+    for (const file of results.overwrittenFiles) {
+      console.log(chalk.yellow(` - ${file}`));
+    }
+  }
+
+  if (results.dryRunOverwrittenFiles.length > 0) {
+    console.log('Would overwrite files:');
+    for (const file of results.dryRunOverwrittenFiles) {
+      console.log(chalk.yellow(` - ${file}`));
+    }
+  }
+
+  if (results.dryRunFiles.length > 0) {
+    console.log('Would create files:');
+    for (const file of results.dryRunFiles) {
+      console.log(chalk.magenta(`  - ${file}`));
+    }
+  }
+
+  if (results.dryRunSkippedFiles.length > 0) {
+    console.log('Would skip files:');
+    for (const file of results.dryRunSkippedFiles) {
+      console.log(chalk.grey(`  - ${file}`));
+    }
+  }
+
+  if (results.createdFiles.length > 0) {
+    console.log('Created files: ');
+    for (const file of results.createdFiles) {
+      console.log(chalk.green(`  - ${file}`));
     }
   }
 
