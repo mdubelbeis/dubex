@@ -8,6 +8,7 @@ export function createResourceCommand() {
   command
     .argument('<entity>', 'Resource/entity name, such as User or Bug')
     .option('--dry-run', 'Preview generated files without writing them')
+    .option('--typescript', 'Generate .ts files')
     .description('Generate Express resource boilerplate')
     .action((entity: string, options: GenerateResourceOptions) =>
       generateResource(entity, options)

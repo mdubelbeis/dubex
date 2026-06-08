@@ -12,5 +12,5 @@ export interface GenerationResult {
 export type GenerateResourceOptions = {
   dryRun?: boolean;
   force?: boolean;
-  ts?: boolean;
+  typescript?: boolean;
 };
