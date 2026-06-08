@@ -27,7 +27,7 @@ export const outputGenerationSummary = (entity: string, results: GenerationResul
   }
 
   if (results.dryRunSkippedFiles.length > 0) {
-    console.log('Would skip dirs:');
+    console.log('Would skip files:');
     for (const file of results.dryRunSkippedFiles) {
       console.log(chalk.grey(`  - ${file}`));
     }
