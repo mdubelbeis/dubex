@@ -12,6 +12,7 @@
     "dev": "tsx bin/cli.ts",
     "dev:accessors": "tsx bin/cli.ts gen accessors",
     "dev:resource": "tsx bin/cli.ts gen resource",
+    "dev:resources": "tsx bin/cli.ts gen resources",
     "start": "node dist/bin/cli.js",
     "link:global": "pnpm build && pnpm add -g ."
   },

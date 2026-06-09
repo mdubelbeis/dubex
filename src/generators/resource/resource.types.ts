@@ -1,3 +1,5 @@
+import type { ResourceField } from '../resources/resources.types.js';
+
 export interface GenerationResult {
   createdFiles: string[];
   createdDirs: string[];
@@ -15,4 +17,7 @@ export type GenerateResourceOptions = {
   dryRun?: boolean;
   force?: boolean;
   typescript?: boolean;
+  outputDir?: string;
+  fields?: ResourceField[];
+  skipAppFile?: boolean;
 };

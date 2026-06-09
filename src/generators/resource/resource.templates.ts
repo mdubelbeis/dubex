@@ -1,3 +1,5 @@
+import type { ResourceField } from '../resources/resources.types.js';
+
 export const generateJsControllerFile = (entity: string): string => {
   const entityLowerCase = entity.toLowerCase();
 
@@ -154,6 +156,55 @@ const ${entity} = mongoose.model('${entity}', ${entity.toLowerCase()}Schema);
 export default ${entity};`;
 };
 
+const populateSchemaField = (field: ResourceField): string => {
+  const options: string[] = [`type: ${field.type}`];
+
+  if (field.required !== undefined) {
+    options.push(`required: ${field.required}`);
+  }
+
+  if (field.unique !== undefined) {
+    options.push(`unique: ${field.unique}`);
+  }
+
+  if (field.select !== undefined) {
+    options.push(`select: ${field.select}`);
+  }
+
+  if (field.default !== undefined) {
+    const defaultValue = typeof field.default === 'string' ? `'${field.default}'` : field.default;
+
+    options.push(`default: ${defaultValue}`);
+  }
+
+  if (field.enum !== undefined) {
+    const enumValues = field.enum.map((value) => `'${value}'`).join(', ');
+    options.push(`enum: [${enumValues}]`);
+  }
+
+  if (field.ref !== undefined) {
+    options.push(`ref: '${field.ref}'`);
+  }
+
+  return `  ${field.name}: {
+    ${options.join(',\n    ')}
+  }`;
+};
+
+export const generateAndPopulateModelFile = (entity: string, fields: ResourceField[]): string => {
+  const schemaFields = fields.map(populateSchemaField).join(',\n');
+
+  return `import mongoose from 'mongoose';
+
+const ${entity.toLocaleLowerCase()}Schema = new mongoose.Schema({
+${schemaFields}
+});
+
+const ${entity} = mongoose.model('${entity}', ${entity.toLowerCase()}Schema);
+
+export default ${entity};`;
+};
+
 export const generateEnvFile = (): string => {
   return `PORT=3000
 NODE_ENV=development
@@ -198,6 +249,34 @@ const app = express();
 app.use(express.json());
 
 app.use("/api/v1/${entityLowerCase}s", ${entityLowerCase}Router);
+
+export default app;
+`;
+};
+
+export const generateAppFileFromResources = (resources: string[]): string => {
+  const imports = resources
+    .map((resource) => {
+      const resourceLower = resource.toLowerCase();
+      return `import ${resourceLower}Router from "./routes/${resourceLower}.routes.js";`;
+    })
+    .join('\n');
+
+  const routeMounts = resources
+    .map((resource) => {
+      const resourceLower = resource.toLowerCase();
+      return `app.use("/api/v1/${resourceLower}s", ${resourceLower}Router);`;
+    })
+    .join('\n');
+
+  return `import express from "express";
+${imports}
+
+const app = express();
+
+app.use(express.json());
+
+${routeMounts}
 
 export default app;
 `;

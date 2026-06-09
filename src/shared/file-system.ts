@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import type { GenerationResult } from '../generators/resource/resource.types.js';
+
 export const createDirIfMissing = (
   path: string,
   results: GenerationResult,
@@ -15,7 +16,7 @@ export const createDirIfMissing = (
   }
 
   if (!fs.existsSync(path)) {
-    fs.mkdirSync(path);
+    fs.mkdirSync(path, { recursive: true });
     results.createdDirs.push(path);
     return;
   }

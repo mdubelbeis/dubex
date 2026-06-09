@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import type { GenerationResult } from '../generators/resource/resource.types.js';
 
 export const outputGenerationSummary = (entity: string, results: GenerationResult) => {
+  console.log();
   console.log(`Generated resource: ${chalk.blue(entity)}\n`);
 
   if (results.dryRunDirs.length > 0) {
