@@ -12,6 +12,10 @@ Work in progress.
 
 - Generate getters and setters from JavaScript and TypeScript class fields
 - Generate Express/Mongoose/MongoDB resource boilerplate
+- Generate multiple resources from a JSON config file
+- Generate JavaScript or TypeScript resource files
+- Preview generated files with `--dry-run`
+- Overwrite generated resource files with `--force`
 - Generate repeatable project code through one CLI
 
 ## Tech Stack
@@ -34,7 +38,7 @@ dbx gen accessors User.js
 
 ### Generate Resource Boilerplate
 
-Generate Express/Mongoose/MongoDB resource boilerplate for a given entity.
+Generate Express/Mongoose/MongoDB resource boilerplate for a single entity.
 
 ```bash
 dbx gen resource User
@@ -46,6 +50,24 @@ Example:
 dbx gen resource User
 dbx gen resource Task
 dbx gen resource Todo
+```
+
+Generate TypeScript output:
+
+```bash
+dbx gen resource User --typescript
+```
+
+Preview generated files without writing them:
+
+```bash
+dbx gen resource User --dry-run
+```
+
+Overwrite existing generated resource files:
+
+```bash
+dbx gen resource User --force
 ```
 
 Each resource command generates resource-specific files without overwriting existing base files like `app.js`, `server.js`, or `.env`.
@@ -65,31 +87,61 @@ src/
   .env
 ```
 
-Example output:
+### Generate Resources From Config
 
-```text
-Generated resource: User
+Generate multiple Express/Mongoose/MongoDB resources from a JSON config file.
 
-Created directories:
-  - ./examples/src
-  - ./examples/src/controllers
-  - ./examples/src/routes
-  - ./examples/src/models
-
-Created files:
-  - ./examples/src/app.js
-  - ./examples/src/server.js
-  - ./examples/src/.env
-  - ./examples/src/controllers/user.controller.js
-  - ./examples/src/routes/user.routes.js
-  - ./examples/src/models/user.model.js
-
-Skipped directories:
-  - No directories skipped
-
-Skipped files:
-  - No files skipped
+```bash
+dbx gen resources resources.json
 ```
+
+Generate TypeScript output:
+
+```bash
+dbx gen resources resources.json --typescript
+```
+
+Preview generated files without writing them:
+
+```bash
+dbx gen resources resources.json --dry-run
+```
+
+Overwrite existing generated resource files:
+
+```bash
+dbx gen resources resources.json --force
+```
+
+Example config:
+
+```json
+{
+  "resources": [
+    {
+      "name": "User",
+      "fields": [
+        { "name": "name", "type": "String", "required": true },
+        { "name": "email", "type": "String", "required": true, "unique": true },
+        { "name": "password", "type": "String", "required": true, "select": false }
+      ]
+    },
+    {
+      "name": "Project",
+      "fields": [
+        { "name": "title", "type": "String", "required": true },
+        { "name": "description", "type": "String" }
+      ]
+    }
+  ]
+}
+```
+
+The `resources` command generates controller, route, and model files for each resource in the config.
+
+When generating from config, `app.js` or `app.ts` is generated once with route imports and route mounts for the resources in that config file.
+
+Existing `app.js` or `app.ts` files are skipped unless `--force` is used.
 
 ## Accessor Generation: Accepted Class Format
 
@@ -158,12 +210,18 @@ Planned future support includes:
 
 ## Resource Generation Notes
 
-Dubex currently supports generating one resource at a time by passing an entity name.
+Dubex currently supports generating one resource at a time by passing an entity name, or multiple resources from a JSON config file.
 
-Example:
+Single resource example:
 
 ```bash
 dbx gen resource User
+```
+
+Config resource example:
+
+```bash
+dbx gen resources resources.json
 ```
 
 Current generated files include:
@@ -182,16 +240,29 @@ src/server.js
 src/.env
 ```
 
-This allows multiple resources to be generated safely without overwriting existing base project files.
+This allows resources to be generated safely without overwriting existing base project files.
 
-Planned future support includes:
+Generated projects require Express, Mongoose, and dotenv to be installed in the target project.
 
-- Generating multiple resources from a config file
-- Accepting `.json`, `.js`, or `.ts` resource definitions
-- Adding custom schema fields
-- Supporting TypeScript output
-- Adding `--dry-run` support
-- Adding `--force` overwrite support
+Example:
+
+```bash
+pnpm add express mongoose dotenv
+```
+
+For TypeScript output, install the needed TypeScript tooling and types:
+
+```bash
+pnpm add -D typescript tsx @types/node @types/express
+```
+
+## Planned Future Support
+
+- Updating existing `app.js` or `app.ts` files with newly generated routes
+- Adding a setup/install command for Express/Mongoose dependencies
+- Accepting `.js` or `.ts` resource config files
+- Improving plural route naming
+- Supporting more template options
 
 ## Scripts
 
