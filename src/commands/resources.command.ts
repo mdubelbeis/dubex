@@ -1,19 +1,19 @@
 import { Command } from 'commander';
-import { generateResource } from '../generators/resource/resource.generator.js';
 import type { GenerateResourceOptions } from '../generators/resource/resource.types.js';
+import { generateResourcesFromConfig } from '../generators/resources/resources.generator.js';
 
-export function createResourceCommand() {
-  const command = new Command('resource');
+export function createResourcesCommand() {
+  const command = new Command('resources');
 
   command
-    .argument('<entity>', 'Resource/entity name, such as User or Bug')
+    .argument('<config>', 'Path to a resources config file')
     .option('--dry-run', 'Preview generated files without writing them')
     .option('--typescript', 'Generate .ts files')
     .option('--force', 'Overwrite existing generated files')
     .option('-o, --output-dir <path>', 'Output directory for generated files')
-    .description('Generate Express resource boilerplate')
-    .action((entity: string, options: GenerateResourceOptions) =>
-      generateResource(entity, options)
+    .description('Generate one or more resources from a config file')
+    .action((config: string, options: GenerateResourceOptions) =>
+      generateResourcesFromConfig(config, options)
     );
 
   return command;

@@ -1,5 +1,8 @@
+import type { ResourceField } from '../resources/resources.types.js';
 import {
+  generateAndPopulateModelFile,
   generateAppFile,
+  generateAppFileFromResources,
   generateEnvFile,
   generateJsControllerFile,
   generateJsRoutesFile,
@@ -34,4 +37,14 @@ export const handleRoutesFile = (entity: string, typescript?: boolean): string =
   return generateJsRoutesFile(entity);
 };
 
-export const handleModelFile = (entity: string): string => generateModelFile(entity);
+export const handleModelFile = (entity: string, fields: ResourceField[]): string => {
+  if (fields.length === 0) {
+    return generateModelFile(entity);
+  }
+
+  return generateAndPopulateModelFile(entity, fields);
+};
+
+export const handleAppFileFromResources = (resources: string[]): string => {
+  return generateAppFileFromResources(resources);
+};
