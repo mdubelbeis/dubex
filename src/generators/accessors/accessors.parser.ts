@@ -30,6 +30,10 @@ export const parseJsClassFields = (splitFile: string[]) => {
 
   const fieldLine = splitFile.filter((line) => line.includes('_') && !line.includes('this._'));
 
+  if (fieldLine.length === 0) {
+    return [];
+  }
+
   for (const field of fieldLine) {
     const startIndex = field.indexOf('_');
     const endIndex = field.indexOf(';');
