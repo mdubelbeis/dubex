@@ -12,7 +12,7 @@ const handleClassFile = (splitFile: string[], fileExtension: '.ts' | '.js') => {
     const accessors = parseJsClassFields(splitFile);
 
     if (accessors.length === 0) {
-      console.log('Invalid class structure');
+      console.log('Invalid class structure. No class fields detected.');
       process.exit(1);
     }
 
