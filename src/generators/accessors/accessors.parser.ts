@@ -55,7 +55,7 @@ export const parseStaticPrivateFields = (splitFile: string[]): string[] => {
       const [keyword, field] = staticField.trim().split(' ');
 
       if (field) {
-        staticPrivateFields.push(`${keyword} ${field.slice(0, -1)}`);
+        staticPrivateFields.push(`${field.slice(0, -1)}`);
       }
     }
   }
@@ -74,7 +74,7 @@ export const parseStaticFields = (splitFile: string[]): string[] => {
       const [keyword, field] = staticField.trim().split(' ');
 
       if (field) {
-        staticFields.push(`${keyword} ${field.slice(0, -1)}`);
+        staticFields.push(`${field.slice(0, -1)}`);
       }
     }
   }
