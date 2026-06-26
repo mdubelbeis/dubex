@@ -1,4 +1,4 @@
-import type { FieldAndType, GenerateAccessorsOptions } from './accessors.types.js';
+import type { FieldAndType } from './accessors.types.js';
 
 export const parseTsClassFields = (splitFile: string[]) => {
   const tsAccessors: FieldAndType[] = [];
@@ -25,40 +25,43 @@ export const parseTsClassFields = (splitFile: string[]) => {
   return tsAccessors;
 };
 
-export const parseJsClassFields = (splitFile: string[], options: GenerateAccessorsOptions) => {
-  // Parse constructor fields
-  // Parse fields
-
-  let jsAccessors = {};
-
+export const parseJsClassFields = (splitFile: string[]) => {
   const privateFields = parsePrivateFields(splitFile);
   const preFixedFields = parsePrefixFields(splitFile, '_');
   const staticFields = parseStaticFields(splitFile);
   const staticPrivateFields = parseStaticPrivateFields(splitFile);
-  console.log(privateFields);
-  console.log(preFixedFields);
-  console.log(staticFields);
-  console.log(staticPrivateFields);
 
-  return jsAccessors && [];
+  const jsAccessors = {
+    private: privateFields,
+    prefixed: preFixedFields,
+    static: staticFields,
+    staticPrivate: staticPrivateFields,
+  };
+
+  return jsAccessors;
 };
 
 export const parseStaticPrivateFields = (splitFile: string[]): string[] => {
   const filteredStaticPrivateFields = splitFile.filter(
-    (line) => line.includes('static') && line.includes('#') && !line.includes('=')
+    (line) => line.includes('static') && line.includes('#')
   );
 
   const staticPrivateFields: string[] = [];
 
   if (filteredStaticPrivateFields.length > 0) {
-    for (const staticField of filteredStaticPrivateFields) {
-      const [keyword, field] = staticField.trim().split(' ');
+    for (const staticPrivateField of filteredStaticPrivateFields) {
+      const [keyword, field] = staticPrivateField.trim().split(' ');
 
       if (field) {
-        staticPrivateFields.push(`${field.slice(0, -1)}`);
+        if (field.includes(';')) {
+          staticPrivateFields.push(`${field.slice(0, -1)}`);
+        } else {
+          staticPrivateFields.push(`${field.slice(0)}`);
+        }
       }
     }
   }
+
   return staticPrivateFields;
 };
 
@@ -74,7 +77,11 @@ export const parseStaticFields = (splitFile: string[]): string[] => {
       const [keyword, field] = staticField.trim().split(' ');
 
       if (field) {
-        staticFields.push(`${field.slice(0, -1)}`);
+        if (field.includes(';')) {
+          staticFields.push(`${field.slice(0, -1)}`);
+        } else {
+          staticFields.push(`${field.slice(0)}`);
+        }
       }
     }
   }
@@ -85,7 +92,11 @@ export const parsePrivateFields = (splitFile: string[]): string[] => {
   let privateFields: string[] = [];
 
   const privateHeaderFields = splitFile.filter(
-    (line) => line.includes('#') && !line.includes('=') && !line.includes('static')
+    (line) =>
+      line.includes('#') &&
+      !line.includes('=') &&
+      !line.includes('static') &&
+      !line.includes('return')
   );
   const privateConstructorFields = splitFile.filter(
     (line) => line.includes('this.#') && line.includes('=')

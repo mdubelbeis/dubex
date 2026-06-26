@@ -3,10 +3,11 @@ export interface FieldAndType {
   type: string;
 }
 
-export interface JsFields {
-  privateFields: string[];
-  preFixedFields: string[];
-  fields: string[];
+export interface ClassFields {
+  private: string[];
+  prefixed: string[];
+  static: string[];
+  staticPrivate: string[];
 }
 
 export interface GenerateAccessorsOptions {

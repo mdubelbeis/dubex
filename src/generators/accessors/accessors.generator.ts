@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import { formatJsAccessors, formatTsAccessors } from './accessors.formatter.js';
+import { checkJsFields, formatTsAccessors } from './accessors.formatter.js';
 import { parseJsClassFields, parseTsClassFields } from './accessors.parser.js';
 import type { GenerateAccessorsOptions } from './accessors.types.js';
 
@@ -14,15 +14,13 @@ const handleClassFile = (
   }
 
   if (fileExtension === '.js') {
-    // switch for options?
-    const accessors = parseJsClassFields(splitFile, options);
+    const fields = parseJsClassFields(splitFile);
+    // Should I check for accessors here,
+    const { newFields, existingFields } = checkJsFields(fields, splitFile);
+    console.log(`New fields: ${newFields}`);
+    console.log(`Existing fields: ${existingFields}`);
 
-    if (accessors.length === 0) {
-      console.log('Invalid class structure. No class fields detected.');
-      process.exit(1);
-    }
-
-    formatJsAccessors(accessors, splitFile);
+    // writeAccessorsToFile(fields, splitFile);
   }
 };
 
