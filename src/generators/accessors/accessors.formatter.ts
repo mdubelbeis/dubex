@@ -28,12 +28,12 @@ export const formatJsAccessors = (jsAccessors: JsField[], splitFile: string[]) =
     splitFile.splice(
       insertLine,
       0,
-      `\n\tget${capitalizedField}() {\n\t\treturn this._${field};\n\t}`
+      `\n\tget ${capitalizedField}() {\n\t\treturn this._${field};\n\t}`
     );
     splitFile.splice(
       insertLine + 1,
       0,
-      `\n\tset${capitalizedField}(${field}) {\n\t\tthis._${field} = ${field};\n\t}`
+      `\n\tset ${capitalizedField}(${field}) {\n\t\tthis._${field} = ${field};\n\t}`
     );
   }
 };
