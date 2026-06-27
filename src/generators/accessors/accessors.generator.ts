@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import { checkJsFields, formatTsAccessors } from './accessors.formatter.js';
+import { formatTsAccessors, hasAccessors, writeAccessorsToFile } from './accessors.formatter.js';
 import { parseJsClassFields, parseTsClassFields } from './accessors.parser.js';
 import type { GenerateAccessorsOptions } from './accessors.types.js';
 
@@ -15,17 +15,18 @@ const handleClassFile = (
 
   if (fileExtension === '.js') {
     const fields = parseJsClassFields(splitFile);
-    // Should I check for accessors here,
-    const { newFields, existingFields } = checkJsFields(fields, splitFile);
-    console.log(`New fields: ${newFields}`);
-    console.log(`Existing fields: ${existingFields}`);
 
-    // writeAccessorsToFile(fields, splitFile);
+    writeAccessorsToFile(fields, splitFile);
   }
 };
 
 export const generateAccessors = (source: string, options: GenerateAccessorsOptions) => {
   const splitFile: string[] = fs.readFileSync(source, 'utf-8').split('\n');
+
+  if (hasAccessors(splitFile)) {
+    console.log('Accessors detected: Please remove them and try again.');
+    return;
+  }
 
   source.includes('.ts')
     ? handleClassFile(splitFile, '.ts', options)

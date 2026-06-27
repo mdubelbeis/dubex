@@ -1,8 +1,4 @@
-export const generatePrivateFieldTemplate = (
-  splitFile: string[],
-  prefix: string,
-  field: string
-) => {
+export const insertPrivateFieldTemplate = (splitFile: string[], prefix: string, field: string) => {
   const insertLine = splitFile.lastIndexOf('}');
 
   splitFile.splice(insertLine, 0, `\n\tget ${field}() {\n\t\treturn this.${prefix}${field};\n\t}`);
@@ -13,7 +9,7 @@ export const generatePrivateFieldTemplate = (
   );
 };
 
-export const generatePrefixFieldTemplate = (splitFile: string[], prefix: string, field: string) => {
+export const insertPrefixFieldTemplate = (splitFile: string[], prefix: string, field: string) => {
   const insertLine = splitFile.lastIndexOf('}');
 
   splitFile.splice(insertLine, 0, `\n\tget ${field}() {\n\t\treturn this.${prefix}${field};\n\t}`);
@@ -24,7 +20,7 @@ export const generatePrefixFieldTemplate = (splitFile: string[], prefix: string,
   );
 };
 
-export const generateStaticFieldTemplate = (splitFile: string[], staticField: string) => {
+export const insertStaticFieldTemplate = (splitFile: string[], staticField: string) => {
   const insertLine = splitFile.lastIndexOf('}');
   splitFile.splice(
     insertLine,
@@ -38,7 +34,7 @@ export const generateStaticFieldTemplate = (splitFile: string[], staticField: st
   );
 };
 
-export const generateStaticPrivateFieldTemplate = (
+export const insertStaticPrivateFieldTemplate = (
   splitFile: string[],
   prefix: string,
   field: string

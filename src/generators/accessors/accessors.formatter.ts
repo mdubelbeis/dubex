@@ -1,3 +1,9 @@
+import {
+  insertPrefixFieldTemplate,
+  insertPrivateFieldTemplate,
+  insertStaticFieldTemplate,
+  insertStaticPrivateFieldTemplate,
+} from './accessors.templates.js';
 import type { ClassFields, FieldAndType } from './accessors.types.js';
 
 export const formatTsAccessors = (tsAccessors: FieldAndType[], splitFile: string[]) => {
@@ -17,13 +23,7 @@ export const formatTsAccessors = (tsAccessors: FieldAndType[], splitFile: string
   }
 };
 
-// TODO: rename
-// returns new or existing fields based off file
-export const checkJsFields = (fields: ClassFields, splitFile: string[]) => {
-  const newFields: string[] = [];
-  const existingFields: string[] = [];
-
-  // Check for current accessors in file on multiple runs as Class grows
+export const checkAccessors = (splitFile: string[]) => {
   const hasGetAccessors = splitFile.filter((line) => line.includes('get'));
   const hasSetAccessors = splitFile.filter((line) => line.includes('set'));
 
@@ -54,58 +54,41 @@ export const checkJsFields = (fields: ClassFields, splitFile: string[]) => {
     }
   }
 
-  console.log(currentFieldGetAccessors);
-  console.log(currentFieldSetAccessors);
+  return {
+    currentFieldGetAccessors,
+    currentFieldSetAccessors,
+  };
+};
 
+export const hasAccessors = (splitFile: string[]): boolean => {
+  return splitFile.some((line) => line.includes('get') || line.includes('set'));
+};
+
+// TODO: rename
+// returns new or existing fields based off file
+export const writeAccessorsToFile = (fields: ClassFields, splitFile: string[]) => {
   for (const privateField of fields.private) {
     const prefix = privateField.slice(0, 1);
     const field = privateField.slice(1);
 
-    if (!splitFile.includes(`\tget ${field}`) || !splitFile.includes(`\tset ${field}`)) {
-      newFields.push(field);
-    } else {
-      existingFields.push(field);
-      continue;
-    }
+    insertPrivateFieldTemplate(splitFile, prefix, field);
   }
 
   for (const prefixField of fields.prefixed) {
     const prefix = prefixField.slice(0, 1);
     const field = prefixField.slice(1);
 
-    if (!splitFile.includes(`\tget ${field}`) || !splitFile.includes(`\tset ${field}`)) {
-      newFields.push(field);
-    } else {
-      existingFields.push(field);
-      continue;
-    }
+    insertPrefixFieldTemplate(splitFile, prefix, field);
   }
 
   for (const staticField of fields.static) {
-    if (
-      !splitFile.includes(`\tget ${staticField}`) ||
-      !splitFile.includes(`\tset ${staticField}`)
-    ) {
-      newFields.push(staticField);
-    } else {
-      existingFields.push(staticField);
-      continue;
-    }
+    insertStaticFieldTemplate(splitFile, staticField);
   }
 
   for (const staticPrivateField of fields.staticPrivate) {
     const prefix = staticPrivateField.slice(0, 1);
     const field = staticPrivateField.slice(1);
 
-    if (!splitFile.includes(`\tget ${field}`) || !splitFile.includes(`\tset ${field}`)) {
-      newFields.push(field);
-    } else {
-      existingFields.push(staticPrivateField);
-      continue;
-    }
+    insertStaticPrivateFieldTemplate(splitFile, prefix, field);
   }
-  return {
-    newFields,
-    existingFields,
-  };
 };
