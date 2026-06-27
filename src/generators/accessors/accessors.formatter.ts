@@ -4,10 +4,11 @@ import {
   insertStaticFieldTemplate,
   insertStaticPrivateFieldTemplate,
 } from './accessors.templates.js';
-import type { ClassFields, FieldAndType } from './accessors.types.js';
+import type { JsClassFields, ParsedTsFields, TsClassFields } from './accessors.types.js';
 
-export const formatTsAccessors = (tsAccessors: FieldAndType[], splitFile: string[]) => {
+export const formatTsAccessors = (tsAccessors: ParsedTsFields[], splitFile: string[]) => {
   const insertLine = splitFile.lastIndexOf('}');
+
   for (const accessor of tsAccessors) {
     const { field, type } = accessor;
     splitFile.splice(
@@ -61,34 +62,45 @@ export const checkAccessors = (splitFile: string[]) => {
 };
 
 export const hasAccessors = (splitFile: string[]): boolean => {
-  return splitFile.some((line) => line.includes('get') || line.includes('set'));
+  return splitFile.some((line) => line.includes('get ') || line.includes('set '));
 };
 
 // TODO: rename
 // returns new or existing fields based off file
-export const writeAccessorsToFile = (fields: ClassFields, splitFile: string[]) => {
-  for (const privateField of fields.private) {
-    const prefix = privateField.slice(0, 1);
-    const field = privateField.slice(1);
+export const writeAccessorsToFile = (
+  fields: JsClassFields | TsClassFields,
+  splitFile: string[]
+) => {
+  console.log(fields.language);
 
-    insertPrivateFieldTemplate(splitFile, prefix, field);
+  if (fields.language === 'js') {
+    for (const privateField of fields.private) {
+      const prefix = privateField.slice(0, 1);
+      const field = privateField.slice(1);
+
+      insertPrivateFieldTemplate(splitFile, prefix, field);
+    }
+
+    for (const prefixField of fields.prefixed) {
+      const prefix = prefixField.slice(0, 1);
+      const field = prefixField.slice(1);
+
+      insertPrefixFieldTemplate(splitFile, prefix, field);
+    }
+
+    for (const staticField of fields.static) {
+      insertStaticFieldTemplate(splitFile, staticField);
+    }
+
+    for (const staticPrivateField of fields.staticPrivate) {
+      const prefix = staticPrivateField.slice(0, 1);
+      const field = staticPrivateField.slice(1);
+
+      insertStaticPrivateFieldTemplate(splitFile, prefix, field);
+    }
   }
 
-  for (const prefixField of fields.prefixed) {
-    const prefix = prefixField.slice(0, 1);
-    const field = prefixField.slice(1);
-
-    insertPrefixFieldTemplate(splitFile, prefix, field);
-  }
-
-  for (const staticField of fields.static) {
-    insertStaticFieldTemplate(splitFile, staticField);
-  }
-
-  for (const staticPrivateField of fields.staticPrivate) {
-    const prefix = staticPrivateField.slice(0, 1);
-    const field = staticPrivateField.slice(1);
-
-    insertStaticPrivateFieldTemplate(splitFile, prefix, field);
+  if (fields.language === 'ts') {
+    console.log('Start templating');
   }
 };

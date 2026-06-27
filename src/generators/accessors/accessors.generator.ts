@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import { formatTsAccessors, hasAccessors, writeAccessorsToFile } from './accessors.formatter.js';
+import { hasAccessors, writeAccessorsToFile } from './accessors.formatter.js';
 import { parseJsClassFields, parseTsClassFields } from './accessors.parser.js';
 import type { GenerateAccessorsOptions } from './accessors.types.js';
 
@@ -8,7 +8,7 @@ const handleClassFile = (
   source: string,
   options: GenerateAccessorsOptions
 ) => {
-  if (source.includes('.ts')) formatTsAccessors(parseTsClassFields(splitFile), splitFile);
+  if (source.includes('.ts')) writeAccessorsToFile(parseTsClassFields(splitFile), splitFile);
   if (source.includes('.js')) writeAccessorsToFile(parseJsClassFields(splitFile), splitFile);
 };
 

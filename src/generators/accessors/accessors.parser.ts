@@ -1,56 +1,113 @@
-import type { FieldAndType } from './accessors.types.js';
+import type { JsClassFields, ParsedTsFields, TsClassFields } from './accessors.types.js';
 
-export const parseTsClassFields = (splitFile: string[]) => {
-  const tsAccessors: FieldAndType[] = [];
+export const parseTsClassFields = (splitFile: string[]): TsClassFields => {
+  const privateFields = parseTsPrivateFields(splitFile);
+  const publicFields = parseTsPublicFields(splitFile);
+  const protectedFields = parseTsProtectedFields(splitFile);
 
-  // const readOnlyLines = splitFile.filter((line) => line.includes('readonly') && !line.includes('static'));
-  // console.log(`Read Only Lines: ${readOnlyLines}`);
-
-  const privateFieldsLines = splitFile.filter((line) => line.includes('private'));
-  const publicFieldsLines = splitFile.filter((line) => line.includes('public'));
-  const protectedFieldsLines = splitFile.filter((line) => line.includes('protected'));
-
-  // Check for readonly/static in each fieldLines array and output getters only
-
-  const privateStaticFields = privateFieldsLines.filter(
-    (line) => line.includes('static') && !line.includes('readonly')
-  );
-  const privateReadonlyFields = privateFieldsLines.filter(
-    (line) => line.includes('readonly') && !line.includes('static')
-  );
-  const privateStaticReadonlyFields = privateFieldsLines.filter(
-    (line) => line.includes('static') && line.includes('readonly')
-  );
-
-  console.log(privateStaticFields);
-  console.log(privateReadonlyFields);
-  console.log(privateStaticReadonlyFields);
-
-  // for (const field of fieldLine) {
-  //   const startIndex = field.indexOf('_');
-  //   const endIndex = field.indexOf(':');
-  //   const endOfLine = field.indexOf(';');
-
-  //   const fieldName = field.slice(startIndex + 1, endIndex);
-  //   const type = field.slice(endIndex + 2, endOfLine);
-
-  //   tsAccessors.push({ field: fieldName, type: type });
-  // }
-
-  // return tsAccessors;
-  return [];
+  return { language: 'ts', privateFields, publicFields, protectedFields };
 };
 
-export const parseJsClassFields = (splitFile: string[]) => {
+export const parseStaticFields = (fieldsArr: string[]) => {
+  const privateStaticFields: ParsedTsFields[] = [];
+
+  fieldsArr
+    .filter((line) => line.includes('static') && !line.includes('readonly'))
+    .forEach((line) => {
+      const [modifier, classModifier, field, type] = line.trim().split(' ');
+      if (modifier && classModifier && field && type) {
+        privateStaticFields.push({ modifier, classModifier, field, type });
+      }
+    });
+
+  return privateStaticFields;
+};
+
+export const parseReadonlyFields = (fieldsArr: string[]) => {
+  const privateReadonlyFields: ParsedTsFields[] = [];
+
+  fieldsArr
+    .filter((line) => line.includes('readonly') && !line.includes('static'))
+    .forEach((line) => {
+      const [modifier, classModifier, field, type] = line.trim().split(' ');
+      if (modifier && classModifier && field && type) {
+        privateReadonlyFields.push({ modifier, classModifier, field, type });
+      }
+    });
+  return privateReadonlyFields;
+};
+
+export const parseStaticReadonlyFields = (fieldsArr: string[]) => {
+  const privateStaticReadonlyFields: ParsedTsFields[] = [];
+  fieldsArr
+    .filter((line) => line.includes('static') && line.includes('readonly'))
+    .forEach((line) => {
+      const [modifier, classModifier, readonly, field, type] = line.trim().split(' ');
+
+      if (modifier && classModifier && readonly && field && type) {
+        privateStaticReadonlyFields.push({ modifier, classModifier, readonly, field, type });
+      }
+    });
+  return privateStaticReadonlyFields;
+};
+
+export const parseOnlyFields = (fieldsArr: string[]) => {
+  const fields: ParsedTsFields[] = [];
+  fieldsArr
+    .filter((line) => !line.includes('readonly') && !line.includes('static'))
+    .forEach((line) => {
+      const [modifier, field, type] = line.trim().split(' ');
+      if (modifier && field && type) {
+        fields.push({ modifier, field, type });
+      }
+    });
+  return fields;
+};
+
+export const parseTsPrivateFields = (splitFile: string[]) => {
+  const privateFields = splitFile.filter((line) => line.includes('private'));
+
   return {
-    private: parsePrivateFields(splitFile),
-    prefixed: parsePrefixFields(splitFile, '_'),
-    static: parseStaticFields(splitFile),
-    staticPrivate: parseStaticPrivateFields(splitFile),
+    private: parseOnlyFields(privateFields),
+    privateStatic: parseStaticFields(privateFields),
+    privateReadonly: parseReadonlyFields(privateFields),
+    privateStaticReadonly: parseStaticReadonlyFields(privateFields),
   };
 };
 
-export const parseStaticPrivateFields = (splitFile: string[]): string[] => {
+export const parseTsPublicFields = (splitFile: string[]) => {
+  const publicFields = splitFile.filter((line) => line.includes('public'));
+
+  return {
+    public: parseOnlyFields(publicFields),
+    publicStatic: parseStaticFields(publicFields),
+    publicReadonly: parseReadonlyFields(publicFields),
+    publicStaticReadonly: parseStaticReadonlyFields(publicFields),
+  };
+};
+
+export const parseTsProtectedFields = (splitFile: string[]) => {
+  const protectedFields = splitFile.filter((line) => line.includes('protected'));
+
+  return {
+    protected: parseOnlyFields(protectedFields),
+    protectedStatic: parseStaticFields(protectedFields),
+    protectedReadonly: parseReadonlyFields(protectedFields),
+    protectedStaticReadonly: parseStaticReadonlyFields(protectedFields),
+  };
+};
+
+export const parseJsClassFields = (splitFile: string[]): JsClassFields => {
+  return {
+    language: 'js',
+    private: parseJsPrivateFields(splitFile),
+    prefixed: parseJsPrefixFields(splitFile, '_'),
+    static: parseJsStaticFields(splitFile),
+    staticPrivate: parseJsPrivateStaticFields(splitFile),
+  };
+};
+
+export const parseJsPrivateStaticFields = (splitFile: string[]): string[] => {
   const filteredStaticPrivateFields = splitFile.filter(
     (line) => line.includes('static') && line.includes('#')
   );
@@ -74,7 +131,7 @@ export const parseStaticPrivateFields = (splitFile: string[]): string[] => {
   return staticPrivateFields;
 };
 
-export const parseStaticFields = (splitFile: string[]): string[] => {
+export const parseJsStaticFields = (splitFile: string[]): string[] => {
   const filteredStaticFields = splitFile.filter(
     (line) => line.includes('static') && !line.includes('#')
   );
@@ -97,7 +154,7 @@ export const parseStaticFields = (splitFile: string[]): string[] => {
   return staticFields;
 };
 
-export const parsePrivateFields = (splitFile: string[]): string[] => {
+export const parseJsPrivateFields = (splitFile: string[]): string[] => {
   let privateFields: string[] = [];
 
   const privateHeaderFields = splitFile.filter(
@@ -139,7 +196,7 @@ export const parsePrivateFields = (splitFile: string[]): string[] => {
   return privateFields;
 };
 
-export const parsePrefixFields = (splitFile: string[], prefix: string): string[] => {
+export const parseJsPrefixFields = (splitFile: string[], prefix: string): string[] => {
   const prefixFields: string[] = [];
 
   const prefixdHeaderFields = splitFile.filter(
