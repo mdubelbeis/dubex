@@ -35,6 +35,7 @@ export const insertStaticFieldTemplate = (splitFile: string[], staticField: stri
 };
 
 export const insertPrivateStaticFieldTemplate = (
+  // TODO: Should receive class name to allow for <className>.field = field
   splitFile: string[],
   prefix: string,
   field: string
