@@ -3,26 +3,42 @@ import type { FieldAndType } from './accessors.types.js';
 export const parseTsClassFields = (splitFile: string[]) => {
   const tsAccessors: FieldAndType[] = [];
 
-  const fieldLine = splitFile.filter(
-    (line) =>
-      line.includes('private') ||
-      line.includes('public') ||
-      line.includes('protected') ||
-      line.includes('static')
+  // const readOnlyLines = splitFile.filter((line) => line.includes('readonly') && !line.includes('static'));
+  // console.log(`Read Only Lines: ${readOnlyLines}`);
+
+  const privateFieldsLines = splitFile.filter((line) => line.includes('private'));
+  const publicFieldsLines = splitFile.filter((line) => line.includes('public'));
+  const protectedFieldsLines = splitFile.filter((line) => line.includes('protected'));
+
+  // Check for readonly/static in each fieldLines array and output getters only
+
+  const privateStaticFields = privateFieldsLines.filter(
+    (line) => line.includes('static') && !line.includes('readonly')
+  );
+  const privateReadonlyFields = privateFieldsLines.filter(
+    (line) => line.includes('readonly') && !line.includes('static')
+  );
+  const privateStaticReadonlyFields = privateFieldsLines.filter(
+    (line) => line.includes('static') && line.includes('readonly')
   );
 
-  for (const field of fieldLine) {
-    const startIndex = field.indexOf('_');
-    const endIndex = field.indexOf(':');
-    const endOfLine = field.indexOf(';');
+  console.log(privateStaticFields);
+  console.log(privateReadonlyFields);
+  console.log(privateStaticReadonlyFields);
 
-    const fieldName = field.slice(startIndex + 1, endIndex);
-    const type = field.slice(endIndex + 2, endOfLine);
+  // for (const field of fieldLine) {
+  //   const startIndex = field.indexOf('_');
+  //   const endIndex = field.indexOf(':');
+  //   const endOfLine = field.indexOf(';');
 
-    tsAccessors.push({ field: fieldName, type: type });
-  }
+  //   const fieldName = field.slice(startIndex + 1, endIndex);
+  //   const type = field.slice(endIndex + 2, endOfLine);
 
-  return tsAccessors;
+  //   tsAccessors.push({ field: fieldName, type: type });
+  // }
+
+  // return tsAccessors;
+  return [];
 };
 
 export const parseJsClassFields = (splitFile: string[]) => {
