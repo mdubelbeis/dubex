@@ -34,7 +34,7 @@ export const insertStaticFieldTemplate = (splitFile: string[], staticField: stri
   );
 };
 
-export const insertStaticPrivateFieldTemplate = (
+export const insertPrivateStaticFieldTemplate = (
   splitFile: string[],
   prefix: string,
   field: string

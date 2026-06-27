@@ -1,8 +1,8 @@
 import {
   insertPrefixFieldTemplate,
   insertPrivateFieldTemplate,
+  insertPrivateStaticFieldTemplate,
   insertStaticFieldTemplate,
-  insertStaticPrivateFieldTemplate,
 } from './accessors.templates.js';
 import type { JsClassFields, ParsedTsFields, TsClassFields } from './accessors.types.js';
 
@@ -71,8 +71,6 @@ export const writeAccessorsToFile = (
   fields: JsClassFields | TsClassFields,
   splitFile: string[]
 ) => {
-  console.log(fields.language);
-
   if (fields.language === 'js') {
     for (const privateField of fields.private) {
       const prefix = privateField.slice(0, 1);
@@ -96,7 +94,7 @@ export const writeAccessorsToFile = (
       const prefix = staticPrivateField.slice(0, 1);
       const field = staticPrivateField.slice(1);
 
-      insertStaticPrivateFieldTemplate(splitFile, prefix, field);
+      insertPrivateStaticFieldTemplate(splitFile, prefix, field);
     }
   }
 
