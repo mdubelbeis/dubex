@@ -5,19 +5,11 @@ import type { GenerateAccessorsOptions } from './accessors.types.js';
 
 const handleClassFile = (
   splitFile: string[],
-  fileExtension: '.ts' | '.js',
+  source: string,
   options: GenerateAccessorsOptions
 ) => {
-  if (fileExtension === '.ts') {
-    const accessors = parseTsClassFields(splitFile);
-    formatTsAccessors(accessors, splitFile);
-  }
-
-  if (fileExtension === '.js') {
-    const fields = parseJsClassFields(splitFile);
-
-    writeAccessorsToFile(fields, splitFile);
-  }
+  if (source.includes('.ts')) formatTsAccessors(parseTsClassFields(splitFile), splitFile);
+  if (source.includes('.js')) writeAccessorsToFile(parseJsClassFields(splitFile), splitFile);
 };
 
 export const generateAccessors = (source: string, options: GenerateAccessorsOptions) => {
@@ -28,11 +20,7 @@ export const generateAccessors = (source: string, options: GenerateAccessorsOpti
     return;
   }
 
-  source.includes('.ts')
-    ? handleClassFile(splitFile, '.ts', options)
-    : handleClassFile(splitFile, '.js', options);
+  handleClassFile(splitFile, source, options);
 
-  const writeString = splitFile.join('\n');
-
-  fs.writeFileSync(source, writeString);
+  fs.writeFileSync(source, splitFile.join('\n'));
 };

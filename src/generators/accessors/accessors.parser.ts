@@ -26,19 +26,12 @@ export const parseTsClassFields = (splitFile: string[]) => {
 };
 
 export const parseJsClassFields = (splitFile: string[]) => {
-  const privateFields = parsePrivateFields(splitFile);
-  const preFixedFields = parsePrefixFields(splitFile, '_');
-  const staticFields = parseStaticFields(splitFile);
-  const staticPrivateFields = parseStaticPrivateFields(splitFile);
-
-  const jsAccessors = {
-    private: privateFields,
-    prefixed: preFixedFields,
-    static: staticFields,
-    staticPrivate: staticPrivateFields,
+  return {
+    private: parsePrivateFields(splitFile),
+    prefixed: parsePrefixFields(splitFile, '_'),
+    static: parseStaticFields(splitFile),
+    staticPrivate: parseStaticPrivateFields(splitFile),
   };
-
-  return jsAccessors;
 };
 
 export const parseStaticPrivateFields = (splitFile: string[]): string[] => {
