@@ -1,28 +1,14 @@
 import {
-  insertPrefixFieldTemplate,
-  insertPrivateFieldTemplate,
-  insertPrivateStaticFieldTemplate,
-  insertStaticFieldTemplate,
+  insertOnlyFieldsTemplate,
+  insertPrefixFieldJsTemplate,
+  insertPrivateFieldJsTemplate,
+  insertPrivateStaticFieldJsTemplate,
+  insertReadOnlyTsTemplate,
+  insertStaticFieldJsTemplate,
+  insertStaticFieldTsTemplate,
+  insertStaticReadonlyFieldTsTemplate,
 } from './accessors.templates.js';
-import type { JsClassFields, ParsedTsFields, TsClassFields } from './accessors.types.js';
-
-export const formatTsAccessors = (tsAccessors: ParsedTsFields[], splitFile: string[]) => {
-  const insertLine = splitFile.lastIndexOf('}');
-
-  for (const accessor of tsAccessors) {
-    const { field, type } = accessor;
-    splitFile.splice(
-      insertLine,
-      0,
-      `\n\tget ${field}(): ${type} {\n\t\treturn this._${field};\n\t}`
-    );
-    splitFile.splice(
-      insertLine + 1,
-      0,
-      `\n\tset ${field}(${field}: ${type}) {\n\t\tthis._${field} = ${field};\n\t}`
-    );
-  }
-};
+import type { JsClassFields, ParsedTsFieldsTemp } from './accessors.types.js';
 
 export const checkAccessors = (splitFile: string[]) => {
   const hasGetAccessors = splitFile.filter((line) => line.includes('get'));
@@ -68,37 +54,83 @@ export const hasAccessors = (splitFile: string[]): boolean => {
 // TODO: rename
 // returns new or existing fields based off file
 export const writeAccessorsToFile = (
-  fields: JsClassFields | TsClassFields,
-  splitFile: string[]
+  fields: JsClassFields | ParsedTsFieldsTemp,
+  splitFile: string[],
+  classname: string
 ) => {
   if (fields.language === 'js') {
     for (const privateField of fields.private) {
       const prefix = privateField.slice(0, 1);
       const field = privateField.slice(1);
 
-      insertPrivateFieldTemplate(splitFile, prefix, field);
+      insertPrivateFieldJsTemplate(splitFile, prefix, field);
     }
 
     for (const prefixField of fields.prefixed) {
       const prefix = prefixField.slice(0, 1);
       const field = prefixField.slice(1);
 
-      insertPrefixFieldTemplate(splitFile, prefix, field);
+      insertPrefixFieldJsTemplate(splitFile, prefix, field);
     }
 
     for (const staticField of fields.static) {
-      insertStaticFieldTemplate(splitFile, staticField);
+      insertStaticFieldJsTemplate(splitFile, staticField);
     }
 
     for (const staticPrivateField of fields.staticPrivate) {
       const prefix = staticPrivateField.slice(0, 1);
       const field = staticPrivateField.slice(1);
 
-      insertPrivateStaticFieldTemplate(splitFile, prefix, field);
+      insertPrivateStaticFieldJsTemplate(splitFile, prefix, field);
     }
   }
 
   if (fields.language === 'ts') {
-    console.log('Start templating');
+    const { privateFields, publicFields, protectedFields } = fields;
+
+    // Field Only
+    for (const privateOnlyField of privateFields.privateOnlyFields) {
+      insertOnlyFieldsTemplate(splitFile, privateOnlyField);
+    }
+    for (const publicOnlyField of publicFields.publicOnlyFields) {
+      insertOnlyFieldsTemplate(splitFile, publicOnlyField);
+    }
+    for (const protectedOnlyField of protectedFields.protectedOnlyFields) {
+      insertOnlyFieldsTemplate(splitFile, protectedOnlyField);
+    }
+
+    // Readonly Fields
+    for (const privateReadonlyField of privateFields.privateReadonlyFields) {
+      insertReadOnlyTsTemplate(splitFile, privateReadonlyField);
+    }
+    for (const publicReadonlyField of publicFields.publicReadonlyFields) {
+      insertReadOnlyTsTemplate(splitFile, publicReadonlyField);
+    }
+    for (const protectedReadonlyField of protectedFields.protectedReadonlyFields) {
+      insertReadOnlyTsTemplate(splitFile, protectedReadonlyField);
+    }
+
+    // Static Fields
+
+    for (const privateStaticField of privateFields.privateStaticFields) {
+      insertStaticFieldTsTemplate(splitFile, privateStaticField, classname);
+    }
+    for (const publicStaticField of publicFields.publicStaticFields) {
+      insertStaticFieldTsTemplate(splitFile, publicStaticField, classname);
+    }
+    for (const protectedStaticField of protectedFields.protectedStaticFields) {
+      insertStaticFieldTsTemplate(splitFile, protectedStaticField, classname);
+    }
+
+    // Static Readonly Fields
+    for (const privateStaticReadonly of privateFields.privateStaticReadonlyFields) {
+      insertStaticReadonlyFieldTsTemplate(splitFile, privateStaticReadonly, classname);
+    }
+    for (const publicStaticReadonly of publicFields.publicStaticReadonlyFields) {
+      insertStaticReadonlyFieldTsTemplate(splitFile, publicStaticReadonly, classname);
+    }
+    for (const protectedStaticReadonly of protectedFields.protectedStaticReadonlyFields) {
+      insertStaticReadonlyFieldTsTemplate(splitFile, protectedStaticReadonly, classname);
+    }
   }
 };

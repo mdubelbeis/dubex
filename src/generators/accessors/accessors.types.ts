@@ -1,30 +1,65 @@
 export interface ParsedTsFields {
-  modifier: string;
+  modifier?: string;
   classModifier?: string;
-  readonly?: string;
+  staticModifier?: string;
+  readonlyModifier?: string;
+  prefix?: string;
   field: string;
   type: string;
+  value?: string;
+}
+
+export interface ParsedTsFieldsTemp {
+  language: 'ts';
+  privateFields: PrivateFieldsTemp;
+  publicFields: PublicFieldsTemp;
+  protectedFields: ProtectedFieldsTemp;
+}
+
+export interface PrivateFieldsTemp {
+  privateOnlyFields: ParsedTsFields[];
+  privateStaticFields: ParsedTsFields[];
+  privateReadonlyFields: ParsedTsFields[];
+  privateStaticReadonlyFields: ParsedTsFields[];
+}
+export interface PublicFieldsTemp {
+  publicOnlyFields: ParsedTsFields[];
+  publicStaticFields: ParsedTsFields[];
+  publicReadonlyFields: ParsedTsFields[];
+  publicStaticReadonlyFields: ParsedTsFields[];
+}
+export interface ProtectedFieldsTemp {
+  protectedOnlyFields: ParsedTsFields[];
+  protectedStaticFields: ParsedTsFields[];
+  protectedReadonlyFields: ParsedTsFields[];
+  protectedStaticReadonlyFields: ParsedTsFields[];
+}
+
+export interface FilteredTsFields {
+  privateFields: PrivateFields;
+  publicFields: PublicFields;
+  protectedFields: ProtectedFields;
 }
 
 export interface PrivateFields {
-  private: ParsedTsFields[] | [];
-  privateStatic: ParsedTsFields[] | [];
-  privateReadonly: ParsedTsFields[] | [];
-  privateStaticReadonly: ParsedTsFields[] | [];
+  privateOnlyFields: string[] | [];
+  privateStaticFields: string[] | [];
+  privateReadonlyFields: string[] | [];
+  privateStaticReadonlyFields: string[] | [];
 }
 
 export interface PublicFields {
-  public: ParsedTsFields[] | [];
-  publicStatic: ParsedTsFields[] | [];
-  publicReadonly: ParsedTsFields[] | [];
-  publicStaticReadonly: ParsedTsFields[] | [];
+  publicOnlyFields: string[] | [];
+  publicStaticFields: string[] | [];
+  publicReadonlyFields: string[] | [];
+  publicStaticReadonlyFields: string[] | [];
 }
 
 export interface ProtectedFields {
-  protected: ParsedTsFields[] | [];
-  protectedStatic: ParsedTsFields[] | [];
-  protectedReadonly: ParsedTsFields[] | [];
-  protectedStaticReadonly: ParsedTsFields[] | [];
+  protectedOnlyFields: string[] | [];
+  protectedStaticFields: string[] | [];
+  protectedReadonlyFields: string[] | [];
+  protectedStaticReadonlyFields: string[] | [];
 }
 
 export interface JsClassFields {
@@ -33,13 +68,6 @@ export interface JsClassFields {
   prefixed: string[] | [];
   static: string[] | [];
   staticPrivate: string[] | [];
-}
-
-export interface TsClassFields {
-  language: 'ts';
-  privateFields: PrivateFields;
-  publicFields: PublicFields;
-  protectedFields: ProtectedFields;
 }
 
 export interface GenerateAccessorsOptions {
