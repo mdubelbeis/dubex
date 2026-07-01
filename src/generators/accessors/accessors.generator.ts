@@ -1,10 +1,6 @@
 import fs from 'node:fs';
-import { hasAccessors, writeAccessorsToFile } from './accessors.formatter.js';
-import {
-  filterTsClassFields,
-  parseJsClassFields,
-  parseTsClassFieldsTemp,
-} from './accessors.parser.js';
+import { hasAccessors } from './accessors.formatter.js';
+import { filterTsClassFields, parseTsClassFieldsTemp } from './accessors.parser.js';
 import type {
   FilteredTsFields,
   GenerateAccessorsOptions,
@@ -13,26 +9,29 @@ import type {
 
 const handleClassFile = (
   splitFile: string[],
-  fields: string[],
+  Tsfields: string[],
   source: string,
   options: GenerateAccessorsOptions
 ) => {
   const classname = source.split('/').at(-1)?.split('.')[0];
 
   if (source.includes('.ts')) {
-    const filteredFields: FilteredTsFields = filterTsClassFields(fields);
+    const filteredFields: FilteredTsFields = filterTsClassFields(Tsfields);
     const parsedFields: ParsedTsFieldsTemp = parseTsClassFieldsTemp(filteredFields);
 
-    writeAccessorsToFile(parsedFields, splitFile, classname!);
+    // writeAccessorsToFile(parsedFields, splitFile, classname!);
   }
-  if (source.includes('.js'))
-    writeAccessorsToFile(parseJsClassFields(splitFile), splitFile, source);
+  if (source.includes('.js')) {
+    const filteredFields: FilteredJsFields = filterJsClassFields(JsFields);
+    // writeAccessorsToFile(parseJsClassFields(splitFile), splitFile, source);
+  }
 };
 
 export const generateAccessors = (source: string, options: GenerateAccessorsOptions) => {
   const splitFile: string[] = fs.readFileSync(source, 'utf-8').split('\n');
+  console.log(options);
 
-  const fields = splitFile.filter(
+  const Tsfields = splitFile.filter(
     (line) =>
       (line.includes('$') && line.includes('private')) ||
       line.includes('public') ||
@@ -41,7 +40,12 @@ export const generateAccessors = (source: string, options: GenerateAccessorsOpti
       line.includes('readonly')
   );
 
-  if (fields.length === 0) {
+  const JsFields = splitFile.filter((line) => {
+    (line.includes('$') && line.includes('#')) || line.includes('_') || line.includes('static');
+  });
+  console.log(JsFields);
+
+  if (Tsfields.length === 0) {
     console.log('No fields found. Please provide a field and try and again.');
     return;
   }
@@ -51,7 +55,7 @@ export const generateAccessors = (source: string, options: GenerateAccessorsOpti
     return;
   }
 
-  handleClassFile(splitFile, fields, source, options);
+  handleClassFile(splitFile, Tsfields, source, options);
 
   fs.writeFileSync(source, splitFile.join('\n'));
 };

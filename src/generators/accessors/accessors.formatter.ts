@@ -51,8 +51,6 @@ export const hasAccessors = (splitFile: string[]): boolean => {
   return splitFile.some((line) => line.includes('get ') || line.includes('set '));
 };
 
-// TODO: rename
-// returns new or existing fields based off file
 export const writeAccessorsToFile = (
   fields: JsClassFields | ParsedTsFieldsTemp,
   splitFile: string[],
