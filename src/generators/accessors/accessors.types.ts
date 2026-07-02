@@ -1,44 +1,7 @@
-export interface ParsedTsFields {
-  modifier?: string;
-  classModifier?: string;
-  staticModifier?: string;
-  readonlyModifier?: string;
-  prefix?: string;
-  field: string;
-  type: string;
-  value?: string;
-}
-
-export interface ParsedTsFieldsTemp {
-  language: 'ts';
-  privateFields: PrivateFieldsTemp;
-  publicFields: PublicFieldsTemp;
-  protectedFields: ProtectedFieldsTemp;
-}
-
-export interface PrivateFieldsTemp {
-  privateOnlyFields: ParsedTsFields[];
-  privateStaticFields: ParsedTsFields[];
-  privateReadonlyFields: ParsedTsFields[];
-  privateStaticReadonlyFields: ParsedTsFields[];
-}
-export interface PublicFieldsTemp {
-  publicOnlyFields: ParsedTsFields[];
-  publicStaticFields: ParsedTsFields[];
-  publicReadonlyFields: ParsedTsFields[];
-  publicStaticReadonlyFields: ParsedTsFields[];
-}
-export interface ProtectedFieldsTemp {
-  protectedOnlyFields: ParsedTsFields[];
-  protectedStaticFields: ParsedTsFields[];
-  protectedReadonlyFields: ParsedTsFields[];
-  protectedStaticReadonlyFields: ParsedTsFields[];
-}
-
 export interface FilteredTsFields {
-  privateFields: PrivateFields;
-  publicFields: PublicFields;
-  protectedFields: ProtectedFields;
+  privateFields: FilteredPrivateTsFields;
+  publicFields: FilteredPublicTsFields;
+  protectedFields: FilteredProtectedTsFields;
 }
 
 export interface FilteredJsFields {
@@ -52,10 +15,47 @@ export interface FilteredJsFields {
   };
 }
 
+export interface ParsedTsFields {
+  language: 'ts';
+  privateFields: PrivateTsFields;
+  publicFields: PublicTsFields;
+  protectedFields: ProtectedTsFields;
+}
+
 export interface ParsedJsFields {
   language: 'js';
   privateFields: ParsedPrivateJsFields;
   publicFields: ParsedPublicJsFields;
+}
+
+export interface ParsedTsField {
+  modifier?: string;
+  classModifier?: string;
+  staticModifier?: string;
+  readonlyModifier?: string;
+  prefix?: string;
+  field: string;
+  type: string;
+  value?: string;
+}
+
+export interface PrivateTsFields {
+  privateOnlyFields: ParsedTsField[];
+  privateStaticFields: ParsedTsField[];
+  privateReadonlyFields: ParsedTsField[];
+  privateStaticReadonlyFields: ParsedTsField[];
+}
+export interface PublicTsFields {
+  publicOnlyFields: ParsedTsField[];
+  publicStaticFields: ParsedTsField[];
+  publicReadonlyFields: ParsedTsField[];
+  publicStaticReadonlyFields: ParsedTsField[];
+}
+export interface ProtectedTsFields {
+  protectedOnlyFields: ParsedTsField[];
+  protectedStaticFields: ParsedTsField[];
+  protectedReadonlyFields: ParsedTsField[];
+  protectedStaticReadonlyFields: ParsedTsField[];
 }
 
 export interface ParsedPrivateJsFields {
@@ -77,21 +77,21 @@ export interface ParsedPublicJsFields {
   publicStaticFields: ParsedStaticJsField[];
 }
 
-export interface PrivateFields {
+export interface FilteredPrivateTsFields {
   privateOnlyFields: string[] | [];
   privateStaticFields: string[] | [];
   privateReadonlyFields: string[] | [];
   privateStaticReadonlyFields: string[] | [];
 }
 
-export interface PublicFields {
+export interface FilteredPublicTsFields {
   publicOnlyFields: string[] | [];
   publicStaticFields: string[] | [];
   publicReadonlyFields: string[] | [];
   publicStaticReadonlyFields: string[] | [];
 }
 
-export interface ProtectedFields {
+export interface FilteredProtectedTsFields {
   protectedOnlyFields: string[] | [];
   protectedStaticFields: string[] | [];
   protectedReadonlyFields: string[] | [];
