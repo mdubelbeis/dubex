@@ -1,6 +1,7 @@
 import type {
+  FilteredJsFields,
   FilteredTsFields,
-  JsClassFields,
+  ParsedJsFields,
   ParsedTsFields,
   ParsedTsFieldsTemp,
 } from './accessors.types.js';
@@ -222,7 +223,6 @@ export const parseStaticReadonlyFields = (fieldsArr: string[]) => {
           type,
         });
     });
-  console.log(staticReadonlyFields);
 
   return staticReadonlyFields;
 };
@@ -254,14 +254,68 @@ export const parseModifierOnlyFields = (fieldsArr: string[]) => {
   return fields;
 };
 
-export const parseJsClassFields = (splitFile: string[]): JsClassFields => {
+export const filterJsClassFields = (fields: string[]): FilteredJsFields => {
+  const privateFields = fields.filter((line) => line.includes('#'));
+  const publicFields = fields.filter((line) => !line.includes('#'));
+
   return {
-    language: 'js',
-    private: parseJsPrivateFields(splitFile),
-    prefixed: parseJsPrefixFields(splitFile, '_'),
-    static: parseJsStaticFields(splitFile),
-    staticPrivate: parseJsPrivateStaticFields(splitFile),
+    privateFields: {
+      privateOnlyFields: privateFields.filter((line) => !line.includes('static')),
+      privateStaticFields: privateFields.filter((line) => line.includes('static')),
+    },
+    publicFields: {
+      publicOnlyFields: publicFields.filter((line) => !line.includes('static')),
+      publicStaticFields: publicFields.filter((line) => line.includes('static')),
+    },
   };
+};
+
+export const parseJsClassFields = (fields: FilteredJsFields): ParsedJsFields => {
+  const data: ParsedJsFields = {
+    language: 'js',
+    privateFields: {
+      privateOnlyFields: [],
+      privateStaticFields: [],
+    },
+    publicFields: {
+      publicOnlyFields: [],
+      publicStaticFields: [],
+    },
+  };
+
+  for (const unfilteredField of fields.privateFields.privateOnlyFields) {
+    data.privateFields.privateOnlyFields.push({
+      unfilteredField: unfilteredField.trim().slice(0, -1),
+    });
+  }
+
+  for (const unfilteredField of fields.publicFields.publicOnlyFields) {
+    data.publicFields.publicOnlyFields.push({
+      unfilteredField: unfilteredField.trim().slice(0, -1),
+    });
+  }
+
+  for (const unfilteredField of fields.privateFields.privateStaticFields) {
+    const [staticModifier, field] = unfilteredField.trim().split(' ');
+
+    if (staticModifier && field)
+      data.privateFields.privateStaticFields.push({
+        staticModifier,
+        unfilteredField: field.slice(0, -1),
+      });
+  }
+
+  for (const unfilteredField of fields.publicFields.publicStaticFields) {
+    const [staticModifier, field] = unfilteredField.trim().split(' ');
+
+    if (staticModifier && field)
+      data.publicFields.publicStaticFields.push({
+        staticModifier,
+        unfilteredField: field.slice(0, -1),
+      });
+  }
+
+  return data;
 };
 
 export const parseJsPrivateStaticFields = (splitFile: string[]): string[] => {
