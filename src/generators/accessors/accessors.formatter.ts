@@ -6,7 +6,7 @@ import {
   insertStaticJsField,
   insertStaticReadonlyFieldTsTemplate,
 } from './accessors.templates.js';
-import type { ParsedJsFields, ParsedTsFieldsTemp } from './accessors.types.js';
+import type { ParsedJsFields, ParsedTsFields } from './accessors.types.js';
 
 export const checkAccessors = (splitFile: string[]) => {
   const hasGetAccessors = splitFile.filter((line) => line.includes('get'));
@@ -50,7 +50,7 @@ export const hasAccessors = (splitFile: string[]): boolean => {
 };
 
 export const writeAccessorsToFile = (
-  fields: ParsedJsFields | ParsedTsFieldsTemp,
+  fields: ParsedJsFields | ParsedTsFields,
   splitFile: string[],
   classname: string
 ) => {

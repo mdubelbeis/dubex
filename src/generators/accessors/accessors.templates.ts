@@ -1,4 +1,4 @@
-import type { ParsedOnlyJsField, ParsedTsFields } from './accessors.types.js';
+import type { ParsedOnlyJsField, ParsedTsField } from './accessors.types.js';
 
 export const insertOnlyJsField = (splitFile: string[], fieldObj: ParsedOnlyJsField) => {
   const insertLine = splitFile.lastIndexOf('}');
@@ -38,7 +38,7 @@ export const insertStaticJsField = (
   );
 };
 
-export const insertOnlyFieldsTemplate = (splitFile: string[], fieldLine: ParsedTsFields) => {
+export const insertOnlyFieldsTemplate = (splitFile: string[], fieldLine: ParsedTsField) => {
   const insertLine = splitFile.lastIndexOf('}');
 
   const { modifier, prefix, field, type } = fieldLine;
@@ -55,7 +55,7 @@ export const insertOnlyFieldsTemplate = (splitFile: string[], fieldLine: ParsedT
   );
 };
 
-export const insertReadOnlyTsTemplate = (splitFile: string[], fieldLine: ParsedTsFields) => {
+export const insertReadOnlyTsTemplate = (splitFile: string[], fieldLine: ParsedTsField) => {
   const insertLine = splitFile.lastIndexOf('}');
 
   const { modifier, readonlyModifier, prefix, field, type } = fieldLine;
@@ -69,7 +69,7 @@ export const insertReadOnlyTsTemplate = (splitFile: string[], fieldLine: ParsedT
 
 export const insertStaticFieldTsTemplate = (
   splitFile: string[],
-  fieldLine: ParsedTsFields,
+  fieldLine: ParsedTsField,
   classname: string
 ) => {
   const insertLine = splitFile.lastIndexOf('}');
@@ -90,7 +90,7 @@ export const insertStaticFieldTsTemplate = (
 
 export const insertStaticReadonlyFieldTsTemplate = (
   splitFile: string[],
-  fieldLine: ParsedTsFields,
+  fieldLine: ParsedTsField,
   classname: string
 ) => {
   const insertLine = splitFile.lastIndexOf('}');
