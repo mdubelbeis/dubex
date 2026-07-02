@@ -41,6 +41,42 @@ export interface FilteredTsFields {
   protectedFields: ProtectedFields;
 }
 
+export interface FilteredJsFields {
+  privateFields: {
+    privateOnlyFields: string[] | [];
+    privateStaticFields: string[] | [];
+  };
+  publicFields: {
+    publicOnlyFields: string[] | [];
+    publicStaticFields: string[] | [];
+  };
+}
+
+export interface ParsedJsFields {
+  language: 'js';
+  privateFields: ParsedPrivateJsFields;
+  publicFields: ParsedPublicJsFields;
+}
+
+export interface ParsedPrivateJsFields {
+  privateOnlyFields: ParsedOnlyJsField[];
+  privateStaticFields: ParsedStaticJsField[];
+}
+
+export interface ParsedOnlyJsField {
+  unfilteredField: string;
+}
+
+export interface ParsedStaticJsField {
+  staticModifier: string;
+  unfilteredField: string;
+}
+
+export interface ParsedPublicJsFields {
+  publicOnlyFields: ParsedOnlyJsField[];
+  publicStaticFields: ParsedStaticJsField[];
+}
+
 export interface PrivateFields {
   privateOnlyFields: string[] | [];
   privateStaticFields: string[] | [];
@@ -60,14 +96,6 @@ export interface ProtectedFields {
   protectedStaticFields: string[] | [];
   protectedReadonlyFields: string[] | [];
   protectedStaticReadonlyFields: string[] | [];
-}
-
-export interface JsClassFields {
-  language: 'js';
-  private: string[] | [];
-  prefixed: string[] | [];
-  static: string[] | [];
-  staticPrivate: string[] | [];
 }
 
 export interface GenerateAccessorsOptions {

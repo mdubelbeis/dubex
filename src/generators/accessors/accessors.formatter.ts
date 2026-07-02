@@ -1,14 +1,12 @@
 import {
   insertOnlyFieldsTemplate,
-  insertPrefixFieldJsTemplate,
-  insertPrivateFieldJsTemplate,
-  insertPrivateStaticFieldJsTemplate,
+  insertOnlyJsField,
   insertReadOnlyTsTemplate,
-  insertStaticFieldJsTemplate,
   insertStaticFieldTsTemplate,
+  insertStaticJsField,
   insertStaticReadonlyFieldTsTemplate,
 } from './accessors.templates.js';
-import type { JsClassFields, ParsedTsFieldsTemp } from './accessors.types.js';
+import type { ParsedJsFields, ParsedTsFieldsTemp } from './accessors.types.js';
 
 export const checkAccessors = (splitFile: string[]) => {
   const hasGetAccessors = splitFile.filter((line) => line.includes('get'));
@@ -52,34 +50,24 @@ export const hasAccessors = (splitFile: string[]): boolean => {
 };
 
 export const writeAccessorsToFile = (
-  fields: JsClassFields | ParsedTsFieldsTemp,
+  fields: ParsedJsFields | ParsedTsFieldsTemp,
   splitFile: string[],
   classname: string
 ) => {
   if (fields.language === 'js') {
-    for (const privateField of fields.private) {
-      const prefix = privateField.slice(0, 1);
-      const field = privateField.slice(1);
-
-      insertPrivateFieldJsTemplate(splitFile, prefix, field);
+    for (const privateOnlyField of fields.privateFields.privateOnlyFields) {
+      insertOnlyJsField(splitFile, privateOnlyField);
     }
 
-    for (const prefixField of fields.prefixed) {
-      const prefix = prefixField.slice(0, 1);
-      const field = prefixField.slice(1);
-
-      insertPrefixFieldJsTemplate(splitFile, prefix, field);
+    for (const publicOnlyField of fields.publicFields.publicOnlyFields) {
+      insertOnlyJsField(splitFile, publicOnlyField);
     }
 
-    for (const staticField of fields.static) {
-      insertStaticFieldJsTemplate(splitFile, staticField);
+    for (const privateStaticField of fields.privateFields.privateStaticFields) {
+      insertStaticJsField(splitFile, privateStaticField, classname);
     }
-
-    for (const staticPrivateField of fields.staticPrivate) {
-      const prefix = staticPrivateField.slice(0, 1);
-      const field = staticPrivateField.slice(1);
-
-      insertPrivateStaticFieldJsTemplate(splitFile, prefix, field);
+    for (const publicStaticField of fields.publicFields.publicStaticFields) {
+      insertStaticJsField(splitFile, publicStaticField, classname);
     }
   }
 

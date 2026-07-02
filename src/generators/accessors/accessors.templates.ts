@@ -1,11 +1,11 @@
-import type { ParsedTsFields } from './accessors.types.js';
+import type { ParsedOnlyJsField, ParsedTsFields } from './accessors.types.js';
 
-export const insertPrivateFieldJsTemplate = (
-  splitFile: string[],
-  prefix: string,
-  field: string
-) => {
+export const insertOnlyJsField = (splitFile: string[], fieldObj: ParsedOnlyJsField) => {
   const insertLine = splitFile.lastIndexOf('}');
+  const { unfilteredField } = fieldObj;
+
+  const prefix = unfilteredField.slice(0, 1);
+  const field = unfilteredField.slice(1);
 
   splitFile.splice(insertLine, 0, `\n\tget ${field}() {\n\t\treturn this.${prefix}${field};\n\t}`);
   splitFile.splice(
@@ -15,48 +15,26 @@ export const insertPrivateFieldJsTemplate = (
   );
 };
 
-export const insertPrefixFieldJsTemplate = (splitFile: string[], prefix: string, field: string) => {
-  const insertLine = splitFile.lastIndexOf('}');
-
-  splitFile.splice(insertLine, 0, `\n\tget ${field}() {\n\t\treturn this.${prefix}${field};\n\t}`);
-  splitFile.splice(
-    insertLine + 1,
-    0,
-    `\n\tset ${field}(${field}) {\n\t\tthis.${prefix}${field} = ${field};\n\t}`
-  );
-};
-
-export const insertStaticFieldJsTemplate = (splitFile: string[], staticField: string) => {
-  const insertLine = splitFile.lastIndexOf('}');
-  splitFile.splice(
-    insertLine,
-    0,
-    `\n\tstatic get ${staticField}() {\n\t\treturn this.${staticField};\n\t}`
-  );
-  splitFile.splice(
-    insertLine + 1,
-    0,
-    `\n\tstatic set ${staticField}(${staticField}) {\n\t\tthis.${staticField} = ${staticField};\n\t}`
-  );
-};
-
-export const insertPrivateStaticFieldJsTemplate = (
-  // TODO: Should receive class name to allow for <className>.field = field
+export const insertStaticJsField = (
   splitFile: string[],
-  prefix: string,
-  field: string
+  fieldObj: { staticModifier: string; unfilteredField: string },
+  classname: string
 ) => {
   const insertLine = splitFile.lastIndexOf('}');
+  const { staticModifier, unfilteredField } = fieldObj;
+
+  const prefix = unfilteredField.slice(0, 1);
+  const field = unfilteredField.slice(1);
 
   splitFile.splice(
     insertLine,
     0,
-    `\n\tstatic get ${field}() {\n\t\treturn this.${prefix}${field};\n\t}`
+    `\n\tget ${field}() {\n\t\treturn ${classname}.${prefix}${field};\n\t}`
   );
   splitFile.splice(
     insertLine + 1,
     0,
-    `\n\tstatic set ${field}(${field}) {\n\t\tthis.${prefix}${field} = ${field};\n\t}`
+    `\n\tset ${field}(${field}) {\n\t\t${classname}.${prefix}${field} = ${field};\n\t}`
   );
 };
 
